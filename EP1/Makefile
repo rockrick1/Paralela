@@ -1,12 +1,12 @@
-CC=gcc
-CFLAGS=-Wall -pedantic -O2
-OBJECTS=pgrep.c #stringReader.o
+CC = g++
+CFLAGS = -O -lpthread -std=c++11
 
-%.o: %.c %.h
-	$(CC) $(CFLAGS) -c $<
+OBJS = pgrep.cpp
 
-pgrep: $(OBJECTS)
-	$(CC) $(OBJECTS) $(CFLAGS) -o pgrep
+pgrep: $(OBJS)
+	$(CC) $(CFLAGS) -o pgrep $(OBJS)
+
+pgrep.o: pgrep.cpp
 
 clean:
-	rm -rf *.o
+	rm -f *~ *.o pgrep
