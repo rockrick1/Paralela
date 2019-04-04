@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
 #include <dirent.h>
@@ -10,16 +8,28 @@
 
 using namespace std;
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+string QUERY; // melhor ser const?
+
+
+// arg da thread vai ser um arquivo
+void *thread_work(void *arg) {
+
+}
+
 // char *process_regex()
-void pgrep(ifstream &f, string query, string path) {
+void *pgrep(void *arg) {
+    string path = (string*) arg;
     string line;
     size_t len = 0;
 
     regex_t regex;
     int reti;
     string msgbuf;
+    ifstream file(path);
 
-    reti = regcomp(&regex, query.c_str(), 0);
+    reti = regcomp(&regex, QUERY.c_str(), 0);
     if (reti) {
         printf("Could not compile regex\n");
         exit(1);
@@ -29,14 +39,15 @@ void pgrep(ifstream &f, string query, string path) {
         puts("No match");
     }
 
-    if (f) {
+    if (file) {
         int linenum = 0;
-        while (getline(f, line)) {
-            linenum++;
+        while (getline(file, line)) {
             // printf("%s\n", line.c_str());
             reti = regexec(&regex, line.c_str(), 0, NULL, 0);
             if (!reti) {
+                pthread_mutex_lock(&mutex);
                 printf("%s: %d: %s\n", path.c_str(), linenum, line.c_str());
+                pthread_mutex_unlock(&mutex);
             }
             else if (reti != REG_NOMATCH) {
                 char *errbuf;
@@ -45,13 +56,13 @@ void pgrep(ifstream &f, string query, string path) {
                 fprintf(stderr, "Regex match failed: %s\n", errbuf);
                 exit(1);
             }
+            linenum++;
         }
     }
     else
         printf("cago\n");
     // precisa disso?
     // regfree(&regex);
-    return;
 }
 
 int main(int argc, char **argv) {
@@ -61,8 +72,10 @@ int main(int argc, char **argv) {
     }
 
     int MAX_THREADS = stoi(argv[1]);
-    string QUERY = argv[2];
+    QUERY = argv[2];
     string DIRECTORY = argv[3];
+
+    pthread_t threads[MAX_THREADS];
 
     DIR *pDir;
     struct dirent *pDirent;
@@ -73,11 +86,15 @@ int main(int argc, char **argv) {
         printf ("Cannot open directory '%s'\n", DIRECTORY.c_str());
         return 1;
     }
+
+    int i = 0;
+    int th;
     while ((pDirent = readdir(pDir)) != NULL) {
         string path;
         path = DIRECTORY + "/" + pDirent->d_name;
-        ifstream file(path);
-        pgrep(file, QUERY, path);
+        if ((th = pthread_create(threads[i], NULL, pgrep, (void *) path)))
+            printf("Failed to create thread %d\n", th);
+        // pgrep(path);
     }
     closedir(pDir);
 
