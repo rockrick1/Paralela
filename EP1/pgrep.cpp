@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
     }
 
     // mata todo mundo
-    for (int i = 0; i < MAX_THREADS && i < INDEX; i++)
+    for (int i = 0; i < INDEX; i++)
         pthread_join(threads[i], NULL);
 
     return 0;
