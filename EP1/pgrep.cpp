@@ -1,5 +1,4 @@
 #include <string.h>
-#include <pthread.h>
 #include <thread>
 #include <mutex>
 #include <dirent.h>
@@ -9,6 +8,58 @@
 #include <string>
 
 using namespace std;
+
+class StringList{
+
+    public:
+
+        StringList(): head(nullptr), tail(nullptr), size(0) {}
+
+        void push(string s){
+            if(size == 0){
+                head = tail = new Node(s);
+            }
+            else{
+                tail->next = new Node(s);
+                tail = tail->next;
+            }
+            size++;
+        }
+
+        string pop(){
+
+            string popped = head->frase;
+
+            Node* old_head = head;
+            head = head->next;
+            delete old_head;
+
+            size--;
+
+            if(size == 0){
+                head = tail = nullptr;
+            }
+
+            return popped;
+        }
+
+    private:
+
+        class Node{
+
+            public:
+
+                Node(string f): frase(f), next(nullptr) {}
+
+                string frase;
+                Node* next;
+        };
+
+        Node* head;
+        Node* tail;
+        int size;
+
+};
 
 std::mutex semaforo;
 
@@ -130,6 +181,7 @@ void list_dir (const char * dir_name) {
 }
 
 int main(int argc, char **argv) {
+
     if (argc != 4) {
         cout << "da os argumento direito pora" << endl;
         return 0;
@@ -154,7 +206,7 @@ int main(int argc, char **argv) {
         // nao permite que mais que MAX_THREADS trabalhem
         while(WORKING_THREADS >= MAX_THREADS) this_thread::yield();
             
-        thread(pgrep, (void *) directories[i].c_str()).detach();    
+        thread(pgrep, (void *) directories[i].c_str()).detach();
         i++;
         
     }
