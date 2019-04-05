@@ -28,6 +28,11 @@ class StringList{
 
         string pop(){
 
+            if (size == 0) {
+                cerr << "tried to pop an empty list" << endl;
+                exit(1);
+            }
+
             string popped = head->frase;
 
             Node* old_head = head;
@@ -41,6 +46,10 @@ class StringList{
             }
 
             return popped;
+        }
+
+        bool is_empty(){
+            return size == 0;
         }
 
     private:
