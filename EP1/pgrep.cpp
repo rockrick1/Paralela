@@ -42,7 +42,7 @@ void *pgrep(void *arg) {
     }
 
     else if (reti == REG_NOMATCH) {
-        puts("No match");
+        cout << "No match" << endl;
     }
 
     if (file) {
@@ -65,7 +65,7 @@ void *pgrep(void *arg) {
         }
     }
     else
-        printf("cago\n");
+        cout << "cago" << endl;
     cout << "oi eu processei " << path << " e acabei." << endl;
     pthread_mutex_lock(&semaforo);
     WORKING_THREADS--;
