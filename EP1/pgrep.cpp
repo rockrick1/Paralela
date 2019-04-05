@@ -1,5 +1,7 @@
 #include <string.h>
 #include <pthread.h>
+#include <thread>
+#include <mutex>
 #include <dirent.h>
 #include <regex.h>
 #include <iostream>
@@ -9,7 +11,7 @@
 using namespace std;
 
 
-pthread_mutex_t semaforo = PTHREAD_MUTEX_INITIALIZER;
+std::mutex semaforo;
 
 char QUERY[100];
 string directories[300]; // seila um tamanho bom
@@ -31,9 +33,9 @@ void *pgrep(void *arg) {
     ifstream file(path);
 
     cout << "oi eu vo processar " << path << endl;
-    pthread_mutex_lock(&semaforo);
+    semaforo.lock();
     WORKING_THREADS++;
-    pthread_mutex_unlock(&semaforo);
+    semaforo.unlock();
 
     reti = regcomp(&regex, QUERY, 0);
     if (reti) {
@@ -50,9 +52,9 @@ void *pgrep(void *arg) {
         while (getline(file, line)) {
             reti = regexec(&regex, line.c_str(), 0, NULL, 0);
             if (!reti) {
-                pthread_mutex_lock(&semaforo);
+                semaforo.lock();
                 cout << path << ": " << linenum << ": " << line.c_str() << endl;
-                pthread_mutex_unlock(&semaforo);
+                semaforo.unlock();
             }
             else if (reti != REG_NOMATCH) {
                 char *errbuf;
@@ -67,9 +69,9 @@ void *pgrep(void *arg) {
     else
         cout << "cago" << endl;
     cout << "oi eu processei " << path << " e acabei." << endl;
-    pthread_mutex_lock(&semaforo);
+    semaforo.lock();
     WORKING_THREADS--;
-    pthread_mutex_unlock(&semaforo);
+    semaforo.unlock();
     // precisa disso?
     // regfree(&regex);
 }
