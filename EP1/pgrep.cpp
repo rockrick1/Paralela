@@ -1,4 +1,5 @@
-#include <string.h>
+#include <string>
+#include <sstream>
 #include <thread>
 #include <mutex>
 #include <dirent.h>
@@ -73,16 +74,18 @@ class StringList{
 std::mutex semaforo;
 
 char QUERY[100];
-string directories[300]; // seila um tamanho bom
+StringList directories; // seila um tamanho bom > ENTAO BORA FAZER UMA LISTA
 unsigned INDEX = 0;
 unsigned WORKING_THREADS = 0;
 
 
 // char *process_regex()
-void *pgrep(void *arg) {
-    char path[200];
-    strcpy(path, (char*) arg);
+void *pgrep(string arg) {
+    char path[arg.size()+1];
+    arg.copy(path, arg.size()+1);
+    path[arg.size()] = '\0';
 
+    StringList matches;
     string line;
     size_t len = 0;
 
@@ -91,7 +94,7 @@ void *pgrep(void *arg) {
     string msgbuf;
     ifstream file(path);
 
-    cout << "oi eu vo processar " << path << endl;
+    //cout << "oi eu vo processar " << path << endl;
     semaforo.lock();
     WORKING_THREADS++;
     semaforo.unlock();
@@ -111,9 +114,9 @@ void *pgrep(void *arg) {
         while (getline(file, line)) {
             reti = regexec(&regex, line.c_str(), 0, NULL, 0);
             if (!reti) {
-                semaforo.lock();
-                cout << path << ": " << linenum << ": " << line.c_str() << endl;
-                semaforo.unlock();
+                stringstream texto; 
+                texto << path << ": " << linenum << ": " << line.c_str() << endl;
+                matches.push(texto.str());
             }
             else if (reti != REG_NOMATCH) {
                 char *errbuf;
@@ -127,10 +130,13 @@ void *pgrep(void *arg) {
     }
     else
         cout << "cago" << endl;
-    cout << "oi eu processei " << path << " e acabei." << endl;
+
     semaforo.lock();
+    while(!matches.is_empty()) cout << matches.pop();
     WORKING_THREADS--;
+    //cout << "oi eu processei " << path << " e acabei." << endl;
     semaforo.unlock();
+    
     // precisa disso?
     // regfree(&regex);
 }
@@ -160,10 +166,9 @@ void list_dir (const char * dir_name) {
         // se nao for um diretorio, adiciona ele na lista de arquivos
         if (! (entry->d_type & DT_DIR)) {
             // printf ("%s/%s\n", dir_name, d_name);
-            directories[INDEX].append(dir_name);
-            directories[INDEX].append("/");
-            directories[INDEX].append(d_name);
-            INDEX++;
+            stringstream full_path; 
+            full_path << dir_name << "/" << d_name;
+            directories.push(full_path.str());
         }
 
         // caso contrario, é um diretorio, entao faz a recursao
@@ -192,7 +197,7 @@ void list_dir (const char * dir_name) {
 int main(int argc, char **argv) {
 
     if (argc != 4) {
-        cout << "da os argumento direito pora" << endl;
+        cout << "modo de uso: ./" << argv[0] << " num_threads regex file_path" << endl;
         return 0;
     }
 
@@ -206,17 +211,14 @@ int main(int argc, char **argv) {
     // processa os diretorios e guarda eles numa lista de stirngs
     list_dir(DIRECTORY);
 
-    for (int i = 0; i < INDEX; i++)
-        cout << "d:        " << directories[i].c_str() << endl;
+    /*for (int i = 0; i < INDEX; i++)
+        cout << "d:        " << directories[i].c_str() << endl; cant do this anymore */
 
-    char path[200];
-
-    for (int i = 0; i < INDEX;) {
+    while(!directories.is_empty()) {
         // nao permite que mais que MAX_THREADS trabalhem
         while(WORKING_THREADS >= MAX_THREADS) this_thread::yield();
             
-        thread(pgrep, (void *) directories[i].c_str()).detach();
-        i++;
+        thread(pgrep,directories.pop()).detach();
         
     }
 
