@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -O -pthread -std=c++11
+CFLAGS = -O -pthread -std=c++17
 
 OBJS = pgrep.cpp
 

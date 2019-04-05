@@ -10,7 +10,6 @@
 
 using namespace std;
 
-
 std::mutex semaforo;
 
 char QUERY[100];
@@ -143,29 +142,24 @@ int main(int argc, char **argv) {
     char DIRECTORY[200];
     strcpy(DIRECTORY, argv[3]);
 
-    pthread_t threads[MAX_THREADS];
-
     // processa os diretorios e guarda eles numa lista de stirngs
     list_dir(DIRECTORY);
 
     for (int i = 0; i < INDEX; i++)
         cout << "d:        " << directories[i].c_str() << endl;
 
-    int th;
     char path[200];
+
     for (int i = 0; i < INDEX;) {
         // nao permite que mais que MAX_THREADS trabalhem
-        if (WORKING_THREADS < MAX_THREADS) {
-            if ((th = pthread_create(&threads[i], NULL, pgrep,
-                (void *) directories[i].c_str())))
-                cout << "Failed to create thread" << th << endl;
-            i++;
-        }
+        while(WORKING_THREADS >= MAX_THREADS) this_thread::yield();
+            
+        thread(pgrep, (void *) directories[i].c_str()).detach();    
+        i++;
+        
     }
 
-    // mata todo mundo
-    for (int i = 0; i < INDEX; i++)
-        pthread_join(threads[i], NULL);
+    while(WORKING_THREADS > 0) this_thread::yield();
 
     return 0;
 }
