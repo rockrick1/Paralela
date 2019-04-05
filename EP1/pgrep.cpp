@@ -9,7 +9,7 @@
 using namespace std;
 
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t semaforo = PTHREAD_MUTEX_INITIALIZER;
 
 char QUERY[100];
 string directories[300]; // seila um tamanho bom
@@ -30,14 +30,14 @@ void *pgrep(void *arg) {
     string msgbuf;
     ifstream file(path);
 
-    printf("oi eu vo processar %s\n", path);
-    pthread_mutex_lock(&mutex);
+    cout << "oi eu vo processar " << path << endl;
+    pthread_mutex_lock(&semaforo);
     WORKING_THREADS++;
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&semaforo);
 
     reti = regcomp(&regex, QUERY, 0);
     if (reti) {
-        printf("Could not compile regex\n");
+        cout << "Could not compile regex" << endl;
         exit(1);
     }
 
@@ -50,15 +50,15 @@ void *pgrep(void *arg) {
         while (getline(file, line)) {
             reti = regexec(&regex, line.c_str(), 0, NULL, 0);
             if (!reti) {
-                pthread_mutex_lock(&mutex);
-                printf("%s: %d: %s\n", path, linenum, line.c_str());
-                pthread_mutex_unlock(&mutex);
+                pthread_mutex_lock(&semaforo);
+                cout << path << ": " << linenum << ": " << line.c_str() << endl;
+                pthread_mutex_unlock(&semaforo);
             }
             else if (reti != REG_NOMATCH) {
                 char *errbuf;
                 strcpy(errbuf, msgbuf.c_str());
                 regerror(reti, &regex, errbuf, sizeof(errbuf));
-                fprintf(stderr, "Regex match failed: %s\n", errbuf);
+                cerr << "Regex match failed: " << errbuf << endl;
                 exit(1);
             }
             linenum++;
@@ -66,10 +66,10 @@ void *pgrep(void *arg) {
     }
     else
         printf("cago\n");
-    printf("oi eu processei %s e acabei\n", path);
-    pthread_mutex_lock(&mutex);
+    cout << "oi eu processei " << path << " e acabei." << endl;
+    pthread_mutex_lock(&semaforo);
     WORKING_THREADS--;
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&semaforo);
     // precisa disso?
     // regfree(&regex);
 }
@@ -81,8 +81,7 @@ void list_dir (const char * dir_name) {
     d = opendir (dir_name);
 
     if (!d) {
-        fprintf (stderr, "Cannot open directory '%s': %s\n",
-                dir_name, strerror (errno));
+        cerr << "Cannot open directory '" << dir_name << "': " << strerror(errno) << endl;
         exit (EXIT_FAILURE);
     }
 
@@ -115,7 +114,7 @@ void list_dir (const char * dir_name) {
 
                 path_length = snprintf(path, PATH_MAX, "%s/%s", dir_name, d_name);
                 if (path_length >= PATH_MAX) {
-                    fprintf (stderr, "Path length has got too long.\n");
+                    cerr << "Path length has got too long." << endl;
                     exit (EXIT_FAILURE);
                 }
                 list_dir (path);
@@ -124,14 +123,14 @@ void list_dir (const char * dir_name) {
     }
 
     if (closedir (d)) {
-        fprintf (stderr, "Could not close '%s': %s\n", dir_name, strerror (errno));
+        cerr << "Could not close '" << dir_name << "': "<< strerror(errno) << endl;
         exit (EXIT_FAILURE);
     }
 }
 
 int main(int argc, char **argv) {
     if (argc != 4) {
-        printf("da os argumento direito pora\n");
+        cout << "da os argumento direito pora" << endl;
         return 0;
     }
 
@@ -148,7 +147,7 @@ int main(int argc, char **argv) {
     list_dir(DIRECTORY);
 
     for (int i = 0; i < INDEX; i++)
-        printf("d:        %s\n", directories[i].c_str());
+        cout << "d:        " << directories[i].c_str() << endl;
 
     int th;
     char path[200];
@@ -156,8 +155,8 @@ int main(int argc, char **argv) {
         // nao permite que mais que MAX_THREADS trabalhem
         if (WORKING_THREADS < MAX_THREADS) {
             if ((th = pthread_create(&threads[i], NULL, pgrep,
-                 (void *) directories[i].c_str())))
-                printf("Failed to create thread %d\n", th);
+                (void *) directories[i].c_str())))
+                cout << "Failed to create thread" << th << endl;
             i++;
         }
     }
