@@ -95,9 +95,6 @@ void *pgrep(string arg) {
     ifstream file(path);
 
     //cout << "oi eu vo processar " << path << endl;
-    semaforo.lock();
-    WORKING_THREADS++;
-    semaforo.unlock();
 
     reti = regcomp(&regex, QUERY, 0);
     if (reti) {
@@ -197,7 +194,7 @@ void list_dir (const char * dir_name) {
 int main(int argc, char **argv) {
 
     if (argc != 4) {
-        cout << "modo de uso: ./" << argv[0] << " num_threads regex file_path" << endl;
+        cout << "modo de uso: " << argv[0] << " num_threads regex file_path" << endl;
         return 0;
     }
 
@@ -219,6 +216,9 @@ int main(int argc, char **argv) {
         while(WORKING_THREADS >= MAX_THREADS) this_thread::yield();
             
         thread(pgrep,directories.pop()).detach();
+		semaforo.lock();
+		WORKING_THREADS++;
+		semaforo.unlock();
         
     }
 
