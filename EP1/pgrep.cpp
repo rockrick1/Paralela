@@ -4,163 +4,109 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
 #include <sstream>
+#include <queue>
 
 using namespace std;
 
-class StringList{
-
-	public:
-
-		StringList(int max): head(nullptr), tail(nullptr), size(0), maxsize(max){}
-
-		void push(string s){
-			if (size == maxsize){
-				cerr << "tried to push into a full list" << endl;
-				exit(1);
-			}
-
-			if(size == 0){
-				head = tail = new Node(s);
-			}
-			else{
-				tail->next = new Node(s);
-				tail = tail->next;
-			}
-			size++;
-		}
-
-		string pop(){
-
-			if (size == 0) {
-				cerr << "tried to pop an empty list" << endl;
-				exit(1);
-			}
-
-			string popped = head->frase;
-
-			Node* old_head = head;
-			head = head->next;
-			delete old_head;
-
-			size--;
-
-			if(size == 0){
-				head = tail = nullptr;
-			}
-
-			return popped;
-		}
-
-		bool is_empty(){
-			return size == 0;
-		}
-
-		bool is_full(){
-			return size == maxsize;
-		}
-
-	private:
-
-		class Node{
-
-			public:
-
-				Node(string f): frase(f), next(nullptr) {}
-
-				string frase;
-				Node* next;
-		};
-
-		Node* head;
-		Node* tail;
-		int size;
-		int maxsize;
-
-};
-
 pthread_mutex_t semaforo = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t change_list = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t wait = PTHREAD_MUTEX_INITIALIZER;
 
 char QUERY[100];
-StringList directories(1000); // seila um tamanho bom > ENTAO BORA FAZER UMA LISTA
-unsigned INDEX = 0;
-unsigned WORKING_THREADS = 0;
+string DIRECTORY;
+queue<string> directories;
 bool is_search_done = false;
 
 
-// char *process_regex()
 void *pgrep(void *arg) {
-	/*char path[200];
-	strcpy(path, (char*) arg);*/
 
 	while(true){
 
-		while(!is_search_done or directories.is_empty()) pthread_yield();
+		while(directories.empty() and !is_search_done) {
+            // cout << "estou esperando pora" << endl;
+            pthread_yield();
+        }
 
-		pthread_mutex_lock(&semaforo);
-		WORKING_THREADS++; //precisa disso?
-		
+
+        pthread_mutex_lock(&change_list);
 		string path;
 
-		if(!directories.is_empty()){
-			path  = directories.pop(); //pega uma palavra e vai
+        // work work
+		if(!directories.empty()) {
+			path  = directories.front(); //pega uma palavra e vai
+            directories.pop();
+            pthread_mutex_unlock(&change_list);
+
+
+
+
+            string line;
+    		queue<string> matches; //hack para deixar ela de tamanho ilimitado
+    		size_t len = 0;
+
+    		regex_t regex;
+    		int reti;
+    		string msgbuf;
+    		ifstream file(path);
+
+    		reti = regcomp(&regex, QUERY, 0);
+    		if (reti) {
+    			cout << "Could not compile regex" << endl;
+    			exit(1);
+    		}
+
+    		else if (reti == REG_NOMATCH) {
+    			cout << "No match" << endl;
+    		}
+
+    		if (file) {
+    			int linenum = 0;
+    			while (getline(file, line)) {
+    				reti = regexec(&regex, line.c_str(), 0, NULL, 0);
+    				if (!reti) {
+    					stringstream texto;
+    					texto << path << ": " << linenum << ": " << line.c_str() << endl;
+
+                        pthread_mutex_lock(&semaforo);
+                        matches.push(texto.str());
+                        pthread_mutex_unlock(&semaforo);
+    				}
+    				else if (reti != REG_NOMATCH) {
+    					char *errbuf;
+    					strcpy(errbuf, msgbuf.c_str());
+    					regerror(reti, &regex, errbuf, sizeof(errbuf));
+    					cerr << "Regex match failed: " << errbuf << endl;
+    					exit(1);
+    				}
+    				linenum++;
+    			}
+    		}
+    		else
+    			cout << "cago" << endl;
+
+    		pthread_mutex_lock(&semaforo);
+    		while(!matches.empty()) {
+                cout << matches.front();
+                matches.pop();
+            }
+    		pthread_mutex_unlock(&semaforo);
+
 		}
-		else if(is_search_done){
+
+        // job's done
+		else if(is_search_done and directories.empty()) {
+            cout << "kek" << endl;
+            pthread_mutex_unlock(&change_list);
 			return 0; //acabou a pesquisa e não tem mais nada na lista
 		}
-		else{
+
+        // i sleep
+		else {
 			continue; //não tem nada na lista, mas a pesquisa continua
+            pthread_mutex_unlock(&change_list);
 		}
-
-		pthread_mutex_unlock(&semaforo);
-
-		string line;
-		StringList matches(-1); //hack para deixar ela de tamanho ilimitado
-		size_t len = 0;
-
-		regex_t regex;
-		int reti;
-		string msgbuf;
-		ifstream file(path);
-
-		reti = regcomp(&regex, QUERY, 0);
-		if (reti) {
-			cout << "Could not compile regex" << endl;
-			exit(1);
-		}
-
-		else if (reti == REG_NOMATCH) {
-			cout << "No match" << endl;
-		}
-
-		if (file) {
-			int linenum = 0;
-			while (getline(file, line)) {
-				reti = regexec(&regex, line.c_str(), 0, NULL, 0);
-				if (!reti) {
-					stringstream texto; 
-					texto << path << ": " << linenum << ": " << line.c_str() << endl;
-					matches.push(texto.str());
-				}
-				else if (reti != REG_NOMATCH) {
-					char *errbuf;
-					strcpy(errbuf, msgbuf.c_str());
-					regerror(reti, &regex, errbuf, sizeof(errbuf));
-					cerr << "Regex match failed: " << errbuf << endl;
-					exit(1);
-				}
-				linenum++;
-			}
-		}
-		else
-			cout << "cago" << endl;
-
-		pthread_mutex_lock(&semaforo);
-		while(!matches.is_empty()) cout << matches.pop();
-		WORKING_THREADS--;
-		pthread_mutex_unlock(&semaforo);
-		// precisa disso?
-		// regfree(&regex);
 	}
 }
 
@@ -177,7 +123,7 @@ void list_dir (const char * dir_name) {
 
 	while (1) {
 
-		while(directories.is_full()) pthread_yield();
+		while(directories.size() >= 1000) pthread_yield();
 
 		struct dirent *entry;
 		const char *d_name;
@@ -192,9 +138,13 @@ void list_dir (const char * dir_name) {
 		// se nao for um diretorio, adiciona ele na lista de arquivos
 		if (! (entry->d_type & DT_DIR)) {
 			// printf ("%s/%s\n", dir_name, d_name);
-			stringstream full_path; 
+			stringstream full_path;
 			full_path << dir_name << "/" << d_name;
+            while (directories.size() >= 1000)
+                continue;
+            pthread_mutex_lock(&change_list);
 			directories.push(full_path.str());
+            pthread_mutex_unlock(&change_list);
 		}
 
 		// caso contrario, é um diretorio, entao faz a recursao
@@ -227,29 +177,35 @@ int main(int argc, char **argv) {
 	}
 
 	int MAX_THREADS = stoi(argv[1]);
+    int th;
 
 	strcpy(QUERY, argv[2]);
 
-	char DIRECTORY[200];
-	strcpy(DIRECTORY, argv[3]);
+	DIRECTORY = argv[3];
 
 	pthread_t threads[MAX_THREADS];
 
-	// processa os diretorios e guarda eles numa lista de stirngs
-	list_dir(DIRECTORY);
 
-	int th;
+
 	// O i começa em 1 pois teoricamente a primeira thread está pegando a lista
-	for (int i = 1; i < MAX_THREADS;) {
+	for (int i = 0; i < MAX_THREADS;) {
 		// nao permite que mais que MAX_THREADS trabalhem
+        cout << "vo criar thread" << i << endl;
 		if ( ( th = pthread_create(&threads[i], NULL, pgrep, NULL) ) ) //Nem precisa de argumento na real
 			cout << "Failed to create thread " << th << endl;
 		i++;
 	}
 
+    // processa os diretorios e guarda eles numa lista de stirngs
+	list_dir(DIRECTORY.c_str());
+    cout << "cabou a busca" << endl;
+    is_search_done = true;
+
 	// mata todo mundo
-	for (int i = 0; i < INDEX; i++)
+	for (int i = 0; i < MAX_THREADS; i++) {
+        cout << i << endl;
 		pthread_join(threads[i], NULL);
+    }
 
 	return 0;
 }
