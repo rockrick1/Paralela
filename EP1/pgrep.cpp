@@ -12,7 +12,6 @@ using namespace std;
 
 pthread_mutex_t semaforo = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t change_list = PTHREAD_MUTEX_INITIALIZER;
-//pthread_mutex_t test = PTHREAD_MUTEX_INITIALIZER;
 
 char QUERY[100];
 string DIRECTORY;
@@ -24,11 +23,8 @@ void *pgrep(void *arg) {
 
 	while(true){
 
+		// espera chegar mais arquivos pra processar
 		while(directories.empty() and !is_search_done) {
-			//pthread_mutex_lock(&test);
-			//cout << "directories = " << directories.empty() << endl;
-			//cout << "is_search_done = " << is_search_done << endl << flush;
-			//pthread_mutex_unlock(&test);
 			pthread_yield();
 		}
 
@@ -36,17 +32,20 @@ void *pgrep(void *arg) {
 		pthread_mutex_lock(&change_list);
 		string path;
 
-		// work work
+		// começa a processar um arquivo, caso tenha um
 		if(!directories.empty()) {
 			path  = directories.front(); //pega uma palavra e vai
 			directories.pop();
+
+			// a partir daqui podemos sair da seção critica, para outras
+			// threads tambem poderem trabalhar
 			pthread_mutex_unlock(&change_list);
 
 
 
 
 			string line;
-			queue<string> matches; //hack para deixar ela de tamanho ilimitado
+			queue<string> matches;
 			size_t len = 0;
 
 			regex_t regex;
@@ -70,7 +69,7 @@ void *pgrep(void *arg) {
 					reti = regexec(&regex, line.c_str(), 0, NULL, 0);
 					if (!reti) {
 						stringstream texto;
-						texto << path << ": " << linenum << ": " << line.c_str() << endl;
+						texto << path << ": " << linenum << endl;
 
 						pthread_mutex_lock(&semaforo);
 						matches.push(texto.str());
@@ -87,28 +86,28 @@ void *pgrep(void *arg) {
 				}
 			}
 			else
-				cout << "cago" << endl;
+				cout << "Couldn't open file: " << path << endl;
 
+			// imprime os matches, numa seção crítica
 			pthread_mutex_lock(&semaforo);
 			while(!matches.empty()) {
-				cout << matches.front();
+				cout << matches.front().erase(0,2);
 				matches.pop();
 			}
 			pthread_mutex_unlock(&semaforo);
 
 		}
 
-		// job's done
+		// acabaram os arquivos, todas as threads terminam
 		else if(is_search_done and directories.empty()) {
-			cout << "kek" << endl;
 			pthread_mutex_unlock(&change_list);
-			return 0; //acabou a pesquisa e não tem mais nada na lista
+			return 0;
 		}
 
-		// i sleep
+		// não há nada a fazer ainda
 		else {
 			pthread_mutex_unlock(&change_list);
-			continue; //não tem nada na lista, mas a pesquisa continua
+			continue;
 		}
 	}
 }
@@ -172,7 +171,7 @@ void list_dir (const char * dir_name) {
 
 int main(int argc, char **argv) {
 	if (argc != 4) {
-		cout << "da os argumento direito pora" << endl;
+		cout << "modo de uso: " << argv[0] << " num_threads regex file_path" << endl;
 		return 0;
 	}
 
@@ -185,25 +184,19 @@ int main(int argc, char **argv) {
 
 	pthread_t threads[MAX_THREADS];
 
-
-
-	// O i começa em 1 pois teoricamente a primeira thread está pegando a lista
 	for (int i = 0; i < MAX_THREADS;) {
-		// nao permite que mais que MAX_THREADS trabalhem
-		cout << "vo criar thread " << i << endl;
-		if ( ( th = pthread_create(&threads[i], NULL, pgrep, NULL) ) ) //Nem precisa de argumento na real
+		if ( ( th = pthread_create(&threads[i], NULL, pgrep, NULL) ) )
 			cout << "Failed to create thread " << th << endl;
 		i++;
 	}
 
-	// processa os diretorios e guarda eles numa lista de stirngs
+	// processa os diretorios e guarda eles numa lista de stirngs global
+	// directories. Aqui temos o produtor, e as threads serão os consumidores.
 	list_dir(DIRECTORY.c_str());
-	cout << "cabou a busca" << endl << flush;
 	is_search_done = true;
 
-	// mata todo mundo
+	// mata todas as threads
 	for (int i = 0; i < MAX_THREADS; i++) {
-		cout << i << endl;
 		pthread_join(threads[i], NULL);
 	}
 
