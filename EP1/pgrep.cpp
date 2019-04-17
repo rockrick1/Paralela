@@ -1,170 +1,204 @@
-#include <string.h>
 #include <pthread.h>
 #include <dirent.h>
 #include <regex.h>
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstring>
+#include <sstream>
+#include <queue>
 
 using namespace std;
 
-
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t semaforo = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t change_list = PTHREAD_MUTEX_INITIALIZER;
 
 char QUERY[100];
-string directories[300]; // seila um tamanho bom
-unsigned INDEX = 0;
-unsigned WORKING_THREADS = 0;
+string DIRECTORY;
+queue<string> directories;
+bool is_search_done = false;
 
 
-// char *process_regex()
 void *pgrep(void *arg) {
-    char path[200];
-    strcpy(path, (char*) arg);
 
-    string line;
-    size_t len = 0;
+	while(true){
 
-    regex_t regex;
-    int reti;
-    string msgbuf;
-    ifstream file(path);
+		// espera chegar mais arquivos pra processar
+		while(directories.empty() and !is_search_done) {
+			pthread_yield();
+		}
 
-    printf("oi eu vo processar %s\n", path);
-    pthread_mutex_lock(&mutex);
-    WORKING_THREADS++;
-    pthread_mutex_unlock(&mutex);
 
-    reti = regcomp(&regex, QUERY, 0);
-    if (reti) {
-        printf("Could not compile regex\n");
-        exit(1);
-    }
+		pthread_mutex_lock(&change_list);
+		string path;
 
-    else if (reti == REG_NOMATCH) {
-        puts("No match");
-    }
+		// começa a processar um arquivo, caso tenha um
+		if(!directories.empty()) {
+			path  = directories.front(); //pega uma palavra e vai
+			directories.pop();
 
-    if (file) {
-        int linenum = 0;
-        while (getline(file, line)) {
-            reti = regexec(&regex, line.c_str(), 0, NULL, 0);
-            if (!reti) {
-                pthread_mutex_lock(&mutex);
-                printf("%s: %d: %s\n", path, linenum, line.c_str());
-                pthread_mutex_unlock(&mutex);
-            }
-            else if (reti != REG_NOMATCH) {
-                char *errbuf;
-                strcpy(errbuf, msgbuf.c_str());
-                regerror(reti, &regex, errbuf, sizeof(errbuf));
-                fprintf(stderr, "Regex match failed: %s\n", errbuf);
-                exit(1);
-            }
-            linenum++;
-        }
-    }
-    else
-        printf("cago\n");
-    printf("oi eu processei %s e acabei\n", path);
-    pthread_mutex_lock(&mutex);
-    WORKING_THREADS--;
-    pthread_mutex_unlock(&mutex);
-    // precisa disso?
-    // regfree(&regex);
+			// a partir daqui podemos sair da seção critica, para outras
+			// threads tambem poderem trabalhar
+			pthread_mutex_unlock(&change_list);
+
+
+
+
+			string line;
+			queue<string> matches;
+			size_t len = 0;
+
+			regex_t regex;
+			int reti;
+			string msgbuf;
+			ifstream file(path);
+
+			reti = regcomp(&regex, QUERY, 0);
+			if (reti) {
+				cout << "Could not compile regex" << endl;
+				exit(1);
+			}
+
+			else if (reti == REG_NOMATCH) {
+				cout << "No match" << endl;
+			}
+
+			if (file) {
+				int linenum = 0;
+				while (getline(file, line)) {
+					reti = regexec(&regex, line.c_str(), 0, NULL, 0);
+					if (!reti) {
+						stringstream texto;
+						texto << path << ": " << linenum << endl;
+
+						pthread_mutex_lock(&semaforo);
+						matches.push(texto.str());
+						pthread_mutex_unlock(&semaforo);
+					}
+					else if (reti != REG_NOMATCH) {
+						char *errbuf;
+						strcpy(errbuf, msgbuf.c_str());
+						regerror(reti, &regex, errbuf, sizeof(errbuf));
+						cerr << "Regex match failed: " << errbuf << endl;
+						exit(1);
+					}
+					linenum++;
+				}
+			}
+			else
+				cout << "Couldn't open file: " << path << endl;
+
+			// imprime os matches, numa seção crítica
+			pthread_mutex_lock(&semaforo);
+			while(!matches.empty()) {
+				cout << matches.front().erase(0,2);
+				matches.pop();
+			}
+			pthread_mutex_unlock(&semaforo);
+
+		}
+
+		// acabaram os arquivos, todas as threads terminam
+		else if(is_search_done and directories.empty()) {
+			pthread_mutex_unlock(&change_list);
+			return 0;
+		}
+
+		// não há nada a fazer ainda
+		else {
+			pthread_mutex_unlock(&change_list);
+			continue;
+		}
+	}
 }
 
 // preenche a lista global de diretorios recusivamente
 void list_dir (const char * dir_name) {
-    DIR *d;
+	DIR *d;
 
-    d = opendir (dir_name);
+	d = opendir (dir_name);
 
-    if (!d) {
-        fprintf (stderr, "Cannot open directory '%s': %s\n",
-                dir_name, strerror (errno));
-        exit (EXIT_FAILURE);
-    }
+	if (!d) {
+		cerr << "Cannot open directory '" << dir_name << "': " << strerror(errno) << endl;
+		exit (EXIT_FAILURE);
+	}
 
-    while (1) {
-        struct dirent *entry;
-        const char *d_name;
+	while (1) {
 
-        entry = readdir (d);
-        if (! entry) {
-            break;
-        }
+		struct dirent *entry;
+		const char *d_name;
 
-        d_name = entry->d_name;
+		entry = readdir (d);
+		if (! entry) {
+			break;
+		}
 
-        // se nao for um diretorio, adiciona ele na lista de arquivos
-        if (! (entry->d_type & DT_DIR)) {
-            // printf ("%s/%s\n", dir_name, d_name);
-            directories[INDEX].append(dir_name);
-            directories[INDEX].append("/");
-            directories[INDEX].append(d_name);
-            INDEX++;
-        }
+		d_name = entry->d_name;
 
-        // caso contrario, é um diretorio, entao faz a recursao
-        if (entry->d_type & DT_DIR) {
-            // nao pega .. ou .
-            if (strcmp (d_name, "..") != 0 && strcmp (d_name, ".") != 0) {
-                int path_length;
-                char path[PATH_MAX];
+		// se nao for um diretorio, adiciona ele na lista de arquivos
+		if (! (entry->d_type & DT_DIR)) {
+			// printf ("%s/%s\n", dir_name, d_name);
+			stringstream full_path;
+			full_path << dir_name << "/" << d_name;
+			while (directories.size() >= 1000)  pthread_yield();
+			pthread_mutex_lock(&change_list);
+			directories.push(full_path.str());
+			pthread_mutex_unlock(&change_list);
+		}
 
-                path_length = snprintf(path, PATH_MAX, "%s/%s", dir_name, d_name);
-                if (path_length >= PATH_MAX) {
-                    fprintf (stderr, "Path length has got too long.\n");
-                    exit (EXIT_FAILURE);
-                }
-                list_dir (path);
-            }
-        }
-    }
+		// caso contrario, é um diretorio, entao faz a recursao
+		if (entry->d_type & DT_DIR) {
+			// nao pega .. ou .
+			if (strcmp (d_name, "..") != 0 && strcmp (d_name, ".") != 0) {
+				int path_length;
+				char path[PATH_MAX];
 
-    if (closedir (d)) {
-        fprintf (stderr, "Could not close '%s': %s\n", dir_name, strerror (errno));
-        exit (EXIT_FAILURE);
-    }
+				path_length = snprintf(path, PATH_MAX, "%s/%s", dir_name, d_name);
+				if (path_length >= PATH_MAX) {
+					cerr << "Path length has got too long." << endl;
+					exit (EXIT_FAILURE);
+				}
+				list_dir (path);
+			}
+		}
+	}
+
+	if (closedir (d)) {
+		cerr << "Could not close '" << dir_name << "': "<< strerror(errno) << endl;
+		exit (EXIT_FAILURE);
+	}
 }
 
 int main(int argc, char **argv) {
-    if (argc != 4) {
-        printf("da os argumento direito pora\n");
-        return 0;
-    }
+	if (argc != 4) {
+		cout << "modo de uso: " << argv[0] << " num_threads regex file_path" << endl;
+		return 0;
+	}
 
-    int MAX_THREADS = stoi(argv[1]);
+	int MAX_THREADS = stoi(argv[1]);
+	int th;
 
-    strcpy(QUERY, argv[2]);
+	strcpy(QUERY, argv[2]);
 
-    char DIRECTORY[200];
-    strcpy(DIRECTORY, argv[3]);
+	DIRECTORY = argv[3];
 
-    pthread_t threads[MAX_THREADS];
+	pthread_t threads[MAX_THREADS];
 
-    // processa os diretorios e guarda eles numa lista de stirngs
-    list_dir(DIRECTORY);
+	for (int i = 0; i < MAX_THREADS;) {
+		if ( ( th = pthread_create(&threads[i], NULL, pgrep, NULL) ) )
+			cout << "Failed to create thread " << th << endl;
+		i++;
+	}
 
-    for (int i = 0; i < INDEX; i++)
-        printf("d:        %s\n", directories[i].c_str());
+	// processa os diretorios e guarda eles numa lista de stirngs global
+	// directories. Aqui temos o produtor, e as threads serão os consumidores.
+	list_dir(DIRECTORY.c_str());
+	is_search_done = true;
 
-    int th;
-    char path[200];
-    for (int i = 0; i < INDEX;) {
-        // nao permite que mais que MAX_THREADS trabalhem
-        if (WORKING_THREADS < MAX_THREADS) {
-            if ((th = pthread_create(&threads[i], NULL, pgrep,
-                 (void *) directories[i].c_str())))
-                printf("Failed to create thread %d\n", th);
-            i++;
-        }
-    }
+	// mata todas as threads
+	for (int i = 0; i < MAX_THREADS; i++) {
+		pthread_join(threads[i], NULL);
+	}
 
-    // mata todo mundo
-    for (int i = 0; i < INDEX; i++)
-        pthread_join(threads[i], NULL);
-
-    return 0;
+	return 0;
 }
