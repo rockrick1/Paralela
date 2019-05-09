@@ -2,8 +2,42 @@
 #include <iostream>
 #include <string>
 #include <complex>
+#include "png++/png.hpp"
 
 using namespace std;
+
+//calcula o mandelbrot para um ponto
+template<class real> //recebe do mandelbrot
+inline void calculate_mandelbrot(complex<real> num, int x, int y, png::image< png::rgb_pixel > imagem){
+	const int M = 1000;
+
+	//valor Zj que falhou
+	// -1 se não tiver falhado
+	int j = -1;
+
+	//Valor da iteração passada
+	complex<real> old_num (0,0);
+
+	//Calcula o mandebrot
+	for(int i = 1; i <= M; i++){
+
+		old_num = old_num*old_num + num;
+
+		if( (abs(old_num) > 2 )){
+			j = i;
+			break;
+		}
+	}	
+	
+
+	if (j == -1){
+		imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
+	}
+	else{
+		imagem.set_pixel(x, y, png::rgb_pixel(255, 255, 255));
+	}
+
+}
 
 template<class real> //para trocar entre float e double
 void mandelbrot(char *argv[]){
@@ -17,9 +51,25 @@ void mandelbrot(char *argv[]){
 
 	int threads = stoi(argv[8]);
 
-	string saida = argv[9]; 
+	string saida = argv[9];
+
+	real real_step = (c1.real() - c0.real())/W;
+	real imag_step = (c1.imag() - c0.imag())/H;
+
+	png::image< png::rgb_pixel > imagem(W, H);
+
+	for (png::uint_32 y = 0; y < imagem.get_height(); ++y){
+		for (png::uint_32 x = 0; x < imagem.get_width(); ++x){
+			complex<real> point ( c0.real()+x*real_step , c0.imag()+y*imag_step);
+			calculate_mandelbrot<real>(point, x, y, imagem);
+		}
+	}
+
+	imagem.write("rgb.png");
 }
 
+//Teste Bom
+//./mandelbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 cpu 2 mb.png
 int main(int argc, char *argv[]){
 	//processar os args
 	//mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
