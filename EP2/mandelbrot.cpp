@@ -11,7 +11,7 @@ template<class real> //recebe do mandelbrot
 inline void calculate_mandelbrot(complex<real> num, int x, int y, png::image< png::rgb_pixel > imagem){
 	const int M = 1000;
 
-	//valor Zj que falhou
+	// valor Zj que falhou
 	// -1 se não tiver falhado
 	int j = -1;
 
@@ -27,8 +27,8 @@ inline void calculate_mandelbrot(complex<real> num, int x, int y, png::image< pn
 			j = i;
 			break;
 		}
-	}	
-	
+	}
+
 
 	if (j == -1){
 		imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
@@ -39,19 +39,35 @@ inline void calculate_mandelbrot(complex<real> num, int x, int y, png::image< pn
 
 }
 
-template<class real> //para trocar entre float e double
+template<class real> // para trocar entre float e double
 void mandelbrot(char *argv[]){
-	complex<real> c0 (stod(argv[1]), stod(argv[2]));
-	complex<real> c1 (stod(argv[3]), stod(argv[4]));
+	////////////////////////////////// TESTES //////////////////////////////////
+	//Teste Bom
+	//./mandelbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 cpu 2 mb.png
+	complex<real> c0 (0.27085,0.004640);
+	complex<real> c1 (0.27100,0.004810);
 
-	int W = stoi(argv[5]);
-	int H = stoi(argv[6]);
+	int W = 1000;
+	int H = 1000;
 
-	string CPU_GPU = argv[7];
+	string CPU_GPU = "cpu";
 
-	int threads = stoi(argv[8]);
+	int threads = 2;
 
-	string saida = argv[9];
+	string saida = "mb.png";
+	/////////////////////////////// real oficial ///////////////////////////////
+	// complex<real> c0 (stod(argv[1]), stod(argv[2]));
+	// complex<real> c1 (stod(argv[3]), stod(argv[4]));
+	//
+	// int W = stoi(argv[5]);
+	// int H = stoi(argv[6]);
+	//
+	// string CPU_GPU = argv[7];
+	//
+	// int threads = stoi(argv[8]);
+	//
+	// string saida = argv[9];
+	////////////////////////////////////////////////////////////////////////////
 
 	real real_step = (c1.real() - c0.real())/W;
 	real imag_step = (c1.imag() - c0.imag())/H;
@@ -65,21 +81,19 @@ void mandelbrot(char *argv[]){
 		}
 	}
 
-	imagem.write("rgb.png");
+	imagem.write(saida);
 }
 
-//Teste Bom
-//./mandelbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 cpu 2 mb.png
 int main(int argc, char *argv[]){
 	//processar os args
 	//mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
 
-	if(argc < 10){
-		cout << "Incorrect Number of Args" << endl;
-		cout << "Usage:" << endl;
-		cout << "mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>" << endl;
-		return 0;
-	}
+	// if(argc < 10){
+	// 	cout << "Incorrect Number of Args" << endl;
+	// 	cout << "Usage:" << endl;
+	// 	cout << "mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>" << endl;
+	// 	return 0;
+	// }
 
 	mandelbrot<float>(argv);
 	return 0;
