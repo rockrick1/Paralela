@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -O -std=c++11 -lpng -lz
+CFLAGS = -O -std=c++11
 # LINKFLAGS := -Wl,-rpath,$(HOME)/anaconda3/lib
 
 OBJS = mandelbrot.cpp
@@ -11,4 +11,4 @@ mandelbrot: $(OBJS)
 mandelbrot.o: mandelbrot.cpp
 
 clean:
-	rm -f *~ *.o #mandelbrot
+	rm -f *~ *.o mandelbrot
