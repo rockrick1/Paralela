@@ -43,12 +43,13 @@ template<class real> // para trocar entre float e double
 void mandelbrot(char *argv[]){
 	////////////////////////////////// TESTES //////////////////////////////////
 	//Teste Bom
+	//mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
 	//./mandelbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 cpu 2 mb.png
 	complex<real> c0 (0.27085,0.004640);
 	complex<real> c1 (0.27100,0.004810);
 
-	int W = 1000;
-	int H = 1000;
+	int W = 200;
+	int H = 200;
 
 	string CPU_GPU = "cpu";
 
