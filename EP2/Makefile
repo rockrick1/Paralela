@@ -11,4 +11,7 @@ mandelbrot: $(OBJS)
 mandelbrot.o: mandelbrot.cpp
 
 clean:
-	rm -f *~ *.o mandelbrot
+	rm -f *~ *.o *.png mandelbrot
+
+test:
+	./mandelbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 cpu 2 mb.png
