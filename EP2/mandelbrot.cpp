@@ -54,8 +54,10 @@ void mandelbrot_seq(char *argv[]){
 				imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 			}
 			else{
-				png::uint_32 c = j * 255/1000.0;
-				imagem.set_pixel(x, y, png::rgb_pixel(c, (2*c)%255, (3*c)%255 ));
+				png::uint_32 r = (M-j*255)/M;
+				png::uint_32 g = (M-j*239)/M + 16;
+				png::uint_32 b = (M-j*191)/M + 64;
+				imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
 			}
 		}
 	}
@@ -114,8 +116,10 @@ void mandelbrot_omp(char *argv[]){
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 				}
 				else{
-					png::uint_32 c = j * 255/1000.0;
-					imagem.set_pixel(x, y, png::rgb_pixel(c, (2*c)%255, (3*c)%255 ));
+					png::uint_32 r = (M-j*255)/M;
+					png::uint_32 g = (M-j*239)/M + 16;
+					png::uint_32 b = (M-j*191)/M + 64;
+					imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
 				}
 			}
 		}
