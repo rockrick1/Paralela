@@ -1,13 +1,14 @@
-CC = g++
+CC = g++-9
 CFLAGS = -O -std=c++11
 LDFLAGS = -fopenmp
 # LINKFLAGS := -Wl,-rpath,$(HOME)/anaconda3/lib
+# OSX := -L/usr/local/opt/gcc/lib/gcc/9
 
 OBJS = mandelbrot.cpp
 
 mandelbrot: $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -c $(OBJS) `libpng-config --cflags`
-	$(CC) $(CFLAGS) $(LDFLAGS) -o mbrot  mandelbrot.o `libpng-config --ldflags`
+	$(CC) $(CFLAGS) $(LDFLAGS) $(OSX) -o mbrot  mandelbrot.o `libpng-config --ldflags`
 
 mandelbrot.o: mandelbrot.cpp
 
