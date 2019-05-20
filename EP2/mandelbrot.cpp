@@ -138,8 +138,13 @@ int main(int argc, char *argv[]){
 		return 0;
 	}
 
-	// mandelbrot_seq<float>(argv);
-	mandelbrot_omp<float>(argv);
+	string cgpu(argv[7]);
+	if(cgpu == "cpu")
+		mandelbrot_omp<float>(argv);
+	else if(cgpu == "seq")
+		mandelbrot_seq<float>(argv);
+	else
+		cout << "Errrooou";
 	return 0;
 
 }

@@ -1,4 +1,4 @@
-CC = g++-9
+CC = g++
 CFLAGS = -O -std=c++11
 LDFLAGS = -fopenmp
 # LINKFLAGS := -Wl,-rpath,$(HOME)/anaconda3/lib

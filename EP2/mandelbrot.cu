@@ -16,8 +16,6 @@ void mandelbrot_seq(char *argv[]){
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
-	string CPU_GPU = argv[7];
-
 	int threads = stoi(argv[8]);
 
 	string saida = argv[9];
@@ -74,8 +72,6 @@ void mandelbrot_omp(char *argv[]){
 
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
-
-	string CPU_GPU = argv[7];
 
 	int threads = stoi(argv[8]);
 
@@ -137,16 +133,17 @@ void cudaAssert(cudaError_t err)
     }
 }
 
-__global__
 template<class real> // para trocar entre float e double
-void gpu_calculation(real c0r, real c0i, real real_step, real imag_step, real *results, unsigned n){
+__global__ void gpu_calculation(real c0r, real c0i, real real_step, real imag_step, real *results, unsigned n){
 
 	// index = m*x + y
 	const int globalIndex = blockDim.x*blockIdx.x + threadIdx.x;
 
 	if (globalIndex < n)
-        //calculo louco, deve dar varios errados, complexo nem deve existir em cuda
-        complex<real> point ( c0r+blockIdx.x*real_step , c0i+threadsIdx.x*imag_step);
+        //calcular os complexos na mão
+        real point_r = c0r+blockIdx.x*real_step;
+        real point_i = c0i+threadsIdx.x*imag_step;
+
     	const int M = 1000;
 
 		// valor Zj que falhou
@@ -154,14 +151,19 @@ void gpu_calculation(real c0r, real c0i, real real_step, real imag_step, real *r
 		int j = -1;
 
 		//Valor da iteração passada
-		complex<real> old_num (0,0);
+		real old_r = 0;
+		real old_i = 0;
 
 		//Calcula o mandebrot
 		for(int i = 1; i <= M; i++){
 
-			old_num = old_num*old_num + point;
+			//Calculo da nova iteração na mão
+			old_r = old_r * old_r - old_i * old_i + point_r;
+			old_i = 2 * old_r * old_i + point_i;
 
-			if( (abs(old_num) > 2 )){
+			//abs(complex) = sqrt(a*a + b*b)
+			//Passei a raiz do abs para outro lado
+			if( ((old_r * old_r + old_i * old_i) > 4 )){
 				j = i;
 				break;
 			}
@@ -180,8 +182,6 @@ void mandelbrot_gpu(char *argv[]){
 
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
-
-	string CPU_GPU = argv[7];
 
 	int threads = stoi(argv[8]);
 
@@ -279,10 +279,15 @@ int main(int argc, char *argv[]){
 		cout << "mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>" << endl;
 		return 0;
 	}
-
-	//mandelbrot_seq<float>(argv);
-	//mandelbrot_omp<float>(argv);
-	mandelbrot_gpu<float>(argv);
+	string cgpu(argv[7]);
+	if(cgpu == "cpu")
+		mandelbrot_omp<float>(argv);
+	else if(cgpu == "gpu")
+		mandelbrot_gpu<float>(argv);
+	else if(cgpu == "seq")
+		mandelbrot_seq<float>(argv);
+	else
+		cout << "Errrooou";
 	return 0;
 
 }
