@@ -62,6 +62,13 @@ void mandelbrot_seq(char *argv[]){
 
 	imagem.write(saida);
 }
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 template<class real> // para trocar entre float e double
 void mandelbrot_omp(char *argv[]){
@@ -139,10 +146,10 @@ __global__ void gpu_calculation(real c0r, real c0i, real real_step, real imag_st
 	// index = m*x + y
 	const int globalIndex = blockDim.x*blockIdx.x + threadIdx.x;
 
-	if (globalIndex < n)
+	if (globalIndex < n) {
         //calcular os complexos na mão
         real point_r = c0r+blockIdx.x*real_step;
-        real point_i = c0i+threadsIdx.x*imag_step;
+        real point_i = c0i+threadIdx.x*imag_step;
 
     	const int M = 1000;
 
@@ -170,6 +177,7 @@ __global__ void gpu_calculation(real c0r, real c0i, real real_step, real imag_st
 		}
 
 		results[globalIndex] = j;
+	}
 
 }
 
@@ -191,8 +199,8 @@ void mandelbrot_gpu(char *argv[]){
 	real imag_step = (c1i - c0i)/H;
 
 	png::image< png::rgb_pixel > imagem(W, H);
-	png::uint_32 y;
-	png::uint_32 x;
+	// png::uint_32 y;
+	// png::uint_32 x;
 
 	//Cuda Stuff
 	const int THREADS_PER_BLOCK = 128;
@@ -243,6 +251,7 @@ void mandelbrot_gpu(char *argv[]){
 	cudaFree(cuda_results);
 
 	const int N = W*H;
+	const int M = 1000;
 	int j; //para ficar parecido aos outros
 
 	for(int p = 0; p < N; p++){
