@@ -134,15 +134,7 @@ void cudaAssert(cudaError_t err)
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
-// para trocar entre float e double
 __global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_step, REAL *results, unsigned n){
 
 	// index = m*x + y
@@ -218,7 +210,6 @@ void mandelbrot_gpu(char *argv[]){
 	//Coisas da memoria do cuda
 	//Descomentar caso de erro <<<<<<<<<
 
-	// REAL c0r, c0i, REAL_step, imag_step;
 	REAL *cu_c0r;
 	REAL *cu_c0i;
 	REAL *cu_REAL_step;
@@ -235,12 +226,10 @@ void mandelbrot_gpu(char *argv[]){
 	cudaAssert(cudaMalloc(&cuda_results, W*H*sizeof(REAL)));
 
 	//Copia tudo
-	printf("vo copia\n");
-	cudaAssert(cudaMemcpy((void**)c0r_p, cu_c0r, sizeof(*c0r_p), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy((void**)c0i_p, cu_c0i, sizeof(*c0i_p), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy((void**)c1r_p, cu_REAL_step, sizeof(*c1r_p), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy((void**)c1i_p, cu_imag_step, sizeof(*c1i_p), cudaMemcpyHostToDevice));
-	printf("copiei\n");
+	// cudaAssert(cudaMemcpy((void**)c0r_p, cu_c0r, sizeof(*c0r_p), cudaMemcpyHostToDevice));
+	// cudaAssert(cudaMemcpy((void**)c0i_p, cu_c0i, sizeof(*c0i_p), cudaMemcpyHostToDevice));
+	// cudaAssert(cudaMemcpy((void**)c1r_p, cu_REAL_step, sizeof(*c1r_p), cudaMemcpyHostToDevice));
+	// cudaAssert(cudaMemcpy((void**)c1i_p, cu_imag_step, sizeof(*c1i_p), cudaMemcpyHostToDevice));
 
 
 	//Dois problemas
@@ -249,6 +238,7 @@ void mandelbrot_gpu(char *argv[]){
 	gpu_calculation<<<NUM_BLOCKS, THREADS_PER_BLOCK>>>(c0r, c0i, REAL_step, imag_step, cuda_results, W*H);
 
 	//Pega os resultados do Cuda e desaloca
+	printf("vo copia\n");
 	cudaAssert(cudaMemcpy(results, cuda_results, W*H*sizeof(REAL), cudaMemcpyDeviceToHost));
 
 	cudaFree(cu_c0r);
@@ -262,23 +252,28 @@ void mandelbrot_gpu(char *argv[]){
 	const int M = 1000;
 	int j; //para ficar parecido aos outros
 
-	for(int p = 0; p < N; p++){
-		//Acho que o X e o Y é algo assim
-		int x = p/N;
-		int y = p%N;
+	for(int x = 0; x < H; x++){
+		for(int y = 0; y < W; y++){
+			//Acho que o X e o Y é algo assim
+			// int x = p/N;
+			// int y = p%N;
 
-		j = results[p];
+			// #define A(i, j) _A[n*(i) + (j)] copiei do mini ep 2 muhahaha
 
-		if (j == -1)
-			imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
-		else{
-			png::uint_32 r = (M-j*255)/M;
-			png::uint_32 g = (M-j*239)/M + 16;
-			png::uint_32 b = (M-j*191)/M + 64;
-			imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
+			j = results[H*x + y];
+
+			if (j == -1)
+				imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
+			else {
+				png::uint_32 r = (M-j*255)/M;
+				png::uint_32 g = (M-j*239)/M + 16;
+				png::uint_32 b = (M-j*191)/M + 64;
+				imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
+			}
 		}
 
 	}
+	printf("copiei\n");
 
 	imagem.write(saida);
 
