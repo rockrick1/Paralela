@@ -49,6 +49,7 @@ void mandelbrot_seq(char *argv[]){
 					break;
 				}
 			}
+			printf("%d\n", j);
 
 			if (j == -1){
 				imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
@@ -100,17 +101,32 @@ void mandelbrot_omp(char *argv[]){
 
 				//Valor da iteração passada
 				complex<real> old_num (0,0);
+				// if (x == 0 && y == 0) {
+				// cout << "Real part: " << std::real(old_num) << endl;
+				// cout << "Imaginary part: " << std::imag(old_num) << endl;
+				// old_num *= old_num;
+				// cout << "Real part: " << std::real(old_num) << endl;
+				// cout << "Imaginary part: " << std::imag(old_num) << endl;
+				// }
 
 				//Calcula o mandebrot
 				for(int i = 1; i <= M; i++){
 
+					// cout << "Real part: " << std::real(old_num) << endl;
+ 					// cout << "Imaginary part: " << std::imag(old_num) << endl;
+					// cout << "point Real part: " << std::real(point) << endl;
+ 					// cout << "point Imaginary part: " << std::imag(point) << endl;
 					old_num = old_num*old_num + point;
+					// cout << "new Real part: " << std::real(old_num) << endl;
+					// cout << "new Imaginary part: " << std::imag(old_num) << endl;
+					// cout << endl;
 
 					if( (abs(old_num) > 2 )){
 						j = i;
 						break;
 					}
 				}
+				printf("%d\n", j);
 
 				if (j == -1){
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));

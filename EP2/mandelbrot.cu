@@ -40,6 +40,7 @@ void mandelbrot_seq(char *argv[]){
 			//Calcula o mandebrot
 			for(int i = 1; i <= M; i++){
 
+
 				old_num = old_num*old_num + point;
 
 				if( (abs(old_num) > 2 )){
@@ -160,8 +161,8 @@ __global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_st
 		for(int i = 1; i <= M; i++){
 
 			//Calculo da nova iteração na mão
-			aux = old_r * old_r - old_i * old_i + point_r;
-			old_i = 2 * old_r * old_i + point_i;
+			aux = (old_r * old_r) - (old_i * old_i) + point_r;
+			old_i = (2 * old_r * old_i) + point_i;
 			old_r = aux;
 
 			//abs(complex) = sqrt(a*a + b*b)
@@ -171,9 +172,12 @@ __global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_st
 				break;
 			}
 		}
+		printf("%d\n", j);
 
 		results[globalIndex] = j;
+		// printf("%d\n", j);
 	}
+	else printf("oh boy\n");
 
 }
 
@@ -260,9 +264,9 @@ void mandelbrot_gpu(char *argv[]){
 			// int x = p/N;
 			// int y = p%N;
 
-			// #define A(i, j) _A[n*(i) + (j)] copiei do mini ep 2 muhahaha
-
-			j = results[H*x + y];
+			j = results[W*x + y];
+			// if (j!=23)
+				// printf("%d:%d - %d\n",x,y, j);
 
 			if (j == -1)
 				imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
