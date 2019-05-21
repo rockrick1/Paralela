@@ -220,10 +220,10 @@ void mandelbrot_gpu(char *argv[]){
 	REAL *cuda_results;
 
 	//Aloca tudo
-	cudaAssert(cudaMalloc(&cu_c0r, sizeof(REAL*)));
-	cudaAssert(cudaMalloc(&cu_c0i, sizeof(REAL*)));
-	cudaAssert(cudaMalloc(&cu_REAL_step, sizeof(REAL*)));
-	cudaAssert(cudaMalloc(&cu_imag_step, sizeof(REAL*)));
+	//cudaAssert(cudaMalloc(&cu_c0r, sizeof(REAL*)));
+	//cudaAssert(cudaMalloc(&cu_c0i, sizeof(REAL*)));
+	//cudaAssert(cudaMalloc(&cu_REAL_step, sizeof(REAL*)));
+	//cudaAssert(cudaMalloc(&cu_imag_step, sizeof(REAL*)));
 
 	cudaAssert(cudaMalloc(&cuda_results, W*H*sizeof(REAL)));
 
@@ -243,10 +243,10 @@ void mandelbrot_gpu(char *argv[]){
 	printf("vo copia\n");
 	cudaAssert(cudaMemcpy(results, cuda_results, W*H*sizeof(REAL), cudaMemcpyDeviceToHost));
 
-	cudaFree(cu_c0r);
-	cudaFree(cu_c0i);
-	cudaFree(cu_REAL_step);
-	cudaFree(cu_imag_step);
+	//cudaFree(cu_c0r);
+	//cudaFree(cu_c0i);
+	//cudaFree(cu_REAL_step);
+	//cudaFree(cu_imag_step);
 
 	cudaFree(cuda_results);
 
