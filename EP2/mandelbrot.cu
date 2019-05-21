@@ -185,10 +185,15 @@ __global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_st
 
 // para trocar entre float e double
 void mandelbrot_gpu(char *argv[]){
-	REAL c0r = stod(argv[1]);
-	REAL c0i = stod(argv[2]);
-	REAL c1r = stod(argv[3]);
-	REAL c1i = stod(argv[4]);
+	REAL c0r = stof(argv[1]);
+	REAL c0i = stof(argv[2]);
+	REAL c1r = stof(argv[3]);
+	REAL c1i = stof(argv[4]);
+
+	REAL *c0r_p = &c0r;
+	REAL *c0i_p = &c0i;
+	REAL *c1r_p = &c1r;
+	REAL *c1i_p = &c1i;
 
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
@@ -222,20 +227,20 @@ void mandelbrot_gpu(char *argv[]){
 	REAL *cuda_results;
 
 	//Aloca tudo
-	cudaAssert(cudaMalloc(&cu_c0r, sizeof(REAL)));
-	cudaAssert(cudaMalloc(&cu_c0i, sizeof(REAL)));
-	cudaAssert(cudaMalloc(&cu_REAL_step, sizeof(REAL)));
-	cudaAssert(cudaMalloc(&cu_imag_step, sizeof(REAL)));
-	printf("%lu\n", sizeof(float));
+	cudaAssert(cudaMalloc(&cu_c0r, sizeof(REAL*)));
+	cudaAssert(cudaMalloc(&cu_c0i, sizeof(REAL*)));
+	cudaAssert(cudaMalloc(&cu_REAL_step, sizeof(REAL*)));
+	cudaAssert(cudaMalloc(&cu_imag_step, sizeof(REAL*)));
 
 	cudaAssert(cudaMalloc(&cuda_results, W*H*sizeof(REAL)));
 
 	//Copia tudo
-
-	cudaAssert(cudaMemcpy(&c0r, cu_c0r, sizeof(REAL), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy(&c0i, cu_c0i, sizeof(REAL), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy(&c1r, cu_REAL_step, sizeof(REAL), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy(&c1i, cu_imag_step, sizeof(REAL), cudaMemcpyHostToDevice));
+	printf("vo copia\n");
+	cudaAssert(cudaMemcpy((void**)c0r_p, cu_c0r, sizeof(*c0r_p), cudaMemcpyHostToDevice));
+	cudaAssert(cudaMemcpy((void**)c0i_p, cu_c0i, sizeof(*c0i_p), cudaMemcpyHostToDevice));
+	cudaAssert(cudaMemcpy((void**)c1r_p, cu_REAL_step, sizeof(*c1r_p), cudaMemcpyHostToDevice));
+	cudaAssert(cudaMemcpy((void**)c1i_p, cu_imag_step, sizeof(*c1i_p), cudaMemcpyHostToDevice));
+	printf("copiei\n");
 
 
 	//Dois problemas
