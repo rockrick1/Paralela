@@ -154,13 +154,15 @@ __global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_st
 		//Valor da iteração passada
 		REAL old_r = 0;
 		REAL old_i = 0;
+		REAL aux = 0;
 
 		//Calcula o mandebrot
 		for(int i = 1; i <= M; i++){
 
 			//Calculo da nova iteração na mão
-			old_r = old_r * old_r - old_i * old_i + point_r;
+			aux = old_r * old_r - old_i * old_i + point_r;
 			old_i = 2 * old_r * old_i + point_i;
+			old_r = aux;
 
 			//abs(complex) = sqrt(a*a + b*b)
 			//Passei a raiz do abs para outro lado
