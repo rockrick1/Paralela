@@ -85,6 +85,10 @@ void mandelbrot_omp(char *argv[]){
 	real real_step = (c1r - c0r)/W;
 	real imag_step = (c1i - c0i)/H;
 
+	printf("step cpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
+	printf("step cpu %f %f %f %f\n", real_step, imag_step,(c1r - c0r)/W, (c1i - c0i)/H);
+	printf("%d %d\n", W, H);
+
 	png::image< png::rgb_pixel > imagem(W, H);
 	png::uint_32 y;
 	png::uint_32 x;
@@ -93,6 +97,8 @@ void mandelbrot_omp(char *argv[]){
 		for (y = 0; y < imagem.get_height(); ++y){
 			for (x = 0; x < imagem.get_width(); ++x){
 				complex<real> point ( c0r+x*real_step , c0i+y*imag_step);
+				printf("%d %d\n",x,y );
+				printf("%f %f\n", std::real(point), std::imag(point));
 				const int M = 1000;
 
 				// valor Zj que falhou
@@ -126,7 +132,7 @@ void mandelbrot_omp(char *argv[]){
 						break;
 					}
 				}
-				printf("%d\n", j);
+				// printf("%d\n", j);
 
 				if (j == -1){
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));

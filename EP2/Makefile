@@ -4,6 +4,7 @@ CFLAGS = -O -std=c++11
 LDFLAGS = -fopenmp
 REAL ?= float
 CCFLAGS_CUDA=-g -G -DREAL=$(REAL)
+IMGSIZE = 1024
 # LINKFLAGS := -Wl,-rpath,$(HOME)/anaconda3/lib
 # OSX := -L/usr/local/opt/gcc/lib/gcc/9
 
@@ -21,7 +22,7 @@ clean:
 
 test:
 #mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
-	./mbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 cpu 10 mb.png
+	./mbrot 0.27085 0.004640 0.27100 0.004810 $(IMGSIZE) $(IMGSIZE) cpu 1 mb.png
 
 testgpu:
 #mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
@@ -31,4 +32,4 @@ testgpu:
 gpu:
 	$(NVCC) $(CFLAGS) $(CCFLAGS_CUDA) -c $(OBJS_CUDA) `libpng-config --cflags`
 	$(NVCC) $(CFLAGS) $(CCFLAGS_CUDA) $(OSX) -o mbrot  mandelbrot.o `libpng-config --ldflags`
-	./mbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 gpu 10 mbgpu.png
+	./mbrot 0.27085 0.004640 0.27100 0.004810 $(IMGSIZE) $(IMGSIZE) gpu 10 mbgpu.png

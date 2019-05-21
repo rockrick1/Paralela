@@ -136,16 +136,22 @@ void cudaAssert(cudaError_t err)
 }
 
 
-__global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_step, REAL *results, unsigned n){
+__global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_step, REAL *results, unsigned n, int W, int H){
 
 	// index = m*x + y
 	const int globalIndex = blockDim.x*blockIdx.x + threadIdx.x;
 
+	// printf("%d %d\n", blockIdx.x, threadIdx.x);
+
 	if (globalIndex < n) {
         //calcular os complexos na mão
-        REAL point_r = c0r+blockIdx.x*REAL_step;
-        REAL point_i = c0i+threadIdx.x*imag_step;
+		int x = globalIndex/W;
+		int y = globalIndex%H;
+		// printf("%d %d    %d\n", x, y, n);
+        REAL point_r = c0r+x*REAL_step;
+        REAL point_i = c0i+y*imag_step;
 
+		// printf("%f %f\n", point_r, point_i);
     	const int M = 1000;
 
 		// valor Zj que falhou
@@ -172,12 +178,13 @@ __global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_st
 				break;
 			}
 		}
-		printf("%d\n", j);
+		// printf("%d\n", j);
+		// printf("%d\n", j);
 
 		results[globalIndex] = j;
 		// printf("%d\n", j);
 	}
-	else printf("oh boy\n");
+	// else printf("oh boy\n");
 
 }
 
@@ -202,6 +209,9 @@ void mandelbrot_gpu(char *argv[]){
 
 	REAL REAL_step = (c1r - c0r)/W;
 	REAL imag_step = (c1i - c0i)/H;
+
+	printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
+	printf("step gpu %f %f %f %f\n", REAL_step, imag_step,(c1r - c0r), (c1i - c0i));
 
 	png::image< png::rgb_pixel > imagem(W, H);
 	// png::uint_32 y;
@@ -241,7 +251,8 @@ void mandelbrot_gpu(char *argv[]){
 	//Dois problemas
 	//1: não sei se templates funcionam
 	//2: não sei se mandar diretamente c0r/etc funciona
-	gpu_calculation<<<NUM_BLOCKS, THREADS_PER_BLOCK>>>(c0r, c0i, REAL_step, imag_step, cuda_results, W*H);
+	printf("%f %f\n", REAL_step, imag_step);
+	gpu_calculation<<<NUM_BLOCKS, THREADS_PER_BLOCK>>>(c0r, c0i, REAL_step, imag_step, cuda_results, W*H, W, H);
 
 	//Pega os resultados do Cuda e desaloca
 	printf("vo copia\n");
