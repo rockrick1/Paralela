@@ -23,7 +23,12 @@ test:
 #mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
 	./mbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 cpu 10 mb.png
 
+testgpu:
+#mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
+	./mbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 gpu 10 mbgpu.png
+
 .PHONY: gpu
 gpu:
 	$(NVCC) $(CFLAGS) $(CCFLAGS_CUDA) -c $(OBJS_CUDA) `libpng-config --cflags`
 	$(NVCC) $(CFLAGS) $(CCFLAGS_CUDA) $(OSX) -o mbrot  mandelbrot.o `libpng-config --ldflags`
+	./mbrot 0.27085 0.004640 0.27100 0.004810 1000 1000 gpu 10 mbgpu.png

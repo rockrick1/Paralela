@@ -62,13 +62,7 @@ void mandelbrot_seq(char *argv[]){
 
 	imagem.write(saida);
 }
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+
 
 template<class real> // para trocar entre float e double
 void mandelbrot_omp(char *argv[]){
@@ -135,21 +129,29 @@ void cudaAssert(cudaError_t err)
 {
     if (err != cudaSuccess)
     {
-        printf("Erro!\n");
+        printf("Erro %d!\n", err);
         abort();
     }
 }
 
-template<class real> // para trocar entre float e double
-__global__ void gpu_calculation(real c0r, real c0i, real real_step, real imag_step, real *results, unsigned n){
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// para trocar entre float e double
+__global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_step, REAL *results, unsigned n){
 
 	// index = m*x + y
 	const int globalIndex = blockDim.x*blockIdx.x + threadIdx.x;
 
 	if (globalIndex < n) {
         //calcular os complexos na mão
-        real point_r = c0r+blockIdx.x*real_step;
-        real point_i = c0i+threadIdx.x*imag_step;
+        REAL point_r = c0r+blockIdx.x*REAL_step;
+        REAL point_i = c0i+threadIdx.x*imag_step;
 
     	const int M = 1000;
 
@@ -158,8 +160,8 @@ __global__ void gpu_calculation(real c0r, real c0i, real real_step, real imag_st
 		int j = -1;
 
 		//Valor da iteração passada
-		real old_r = 0;
-		real old_i = 0;
+		REAL old_r = 0;
+		REAL old_i = 0;
 
 		//Calcula o mandebrot
 		for(int i = 1; i <= M; i++){
@@ -181,12 +183,12 @@ __global__ void gpu_calculation(real c0r, real c0i, real real_step, real imag_st
 
 }
 
-template<class real> // para trocar entre float e double
+// para trocar entre float e double
 void mandelbrot_gpu(char *argv[]){
-	real c0r = stod(argv[1]);
-	real c0i = stod(argv[2]);
-	real c1r = stod(argv[3]);
-	real c1i = stod(argv[4]);
+	REAL c0r = stod(argv[1]);
+	REAL c0i = stod(argv[2]);
+	REAL c1r = stod(argv[3]);
+	REAL c1i = stod(argv[4]);
 
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
@@ -195,8 +197,8 @@ void mandelbrot_gpu(char *argv[]){
 
 	string saida = argv[9];
 
-	real real_step = (c1r - c0r)/W;
-	real imag_step = (c1i - c0i)/H;
+	REAL REAL_step = (c1r - c0r)/W;
+	REAL imag_step = (c1i - c0i)/H;
 
 	png::image< png::rgb_pixel > imagem(W, H);
 	// png::uint_32 y;
@@ -206,48 +208,49 @@ void mandelbrot_gpu(char *argv[]){
 	const int THREADS_PER_BLOCK = 128;
 	const int NUM_BLOCKS = (W*H + THREADS_PER_BLOCK-1)/THREADS_PER_BLOCK;
 	//Guarda os resultados calculados na GPU
-	real *results = new real[W*H];
+	REAL *results = new REAL[W*H];
 
 	//Coisas da memoria do cuda
 	//Descomentar caso de erro <<<<<<<<<
-	/*
-	real cu_c0r;
-	real cu_c0i;
-	real cu_real_step;
-	real cu_imag_step;
-	*/
-	real *cuda_results;
+
+	// REAL c0r, c0i, REAL_step, imag_step;
+	REAL *cu_c0r;
+	REAL *cu_c0i;
+	REAL *cu_REAL_step;
+	REAL *cu_imag_step;
+
+	REAL *cuda_results;
 
 	//Aloca tudo
-	/*
-	cudaAssert(cudaMalloc(&cu_c0r, sizeof(real)));
-	cudaAssert(cudaMalloc(&cu_c0i, sizeof(real)));
-	cudaAssert(cudaMalloc(&cu_real_step, sizeof(real)));
-	cudaAssert(cudaMalloc(&cu_imag_step, sizeof(real)));
-	*/
-	cudaAssert(cudaMalloc(&cuda_results, W*H*sizeof(real)));
+	cudaAssert(cudaMalloc(&cu_c0r, sizeof(REAL)));
+	cudaAssert(cudaMalloc(&cu_c0i, sizeof(REAL)));
+	cudaAssert(cudaMalloc(&cu_REAL_step, sizeof(REAL)));
+	cudaAssert(cudaMalloc(&cu_imag_step, sizeof(REAL)));
+	printf("%lu\n", sizeof(float));
+
+	cudaAssert(cudaMalloc(&cuda_results, W*H*sizeof(REAL)));
 
 	//Copia tudo
-	/*
-	cudaAssert(cudaMemcpy(cu_c0r, c0r, sizeof(real), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy(cu_c0i, c0i, sizeof(real), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy(cu_real_step, c1r, sizeof(real), cudaMemcpyHostToDevice));
-	cudaAssert(cudaMemcpy(cu_imag_step, c1i, sizeof(real), cudaMemcpyHostToDevice));
-	*/
+
+	cudaAssert(cudaMemcpy(&c0r, cu_c0r, sizeof(REAL), cudaMemcpyHostToDevice));
+	cudaAssert(cudaMemcpy(&c0i, cu_c0i, sizeof(REAL), cudaMemcpyHostToDevice));
+	cudaAssert(cudaMemcpy(&c1r, cu_REAL_step, sizeof(REAL), cudaMemcpyHostToDevice));
+	cudaAssert(cudaMemcpy(&c1i, cu_imag_step, sizeof(REAL), cudaMemcpyHostToDevice));
+
 
 	//Dois problemas
 	//1: não sei se templates funcionam
 	//2: não sei se mandar diretamente c0r/etc funciona
-	gpu_calculation<real><<<NUM_BLOCKS, THREADS_PER_BLOCK>>>(c0r, c0i, real_step, imag_step, cuda_results, W*H);
+	gpu_calculation<<<NUM_BLOCKS, THREADS_PER_BLOCK>>>(c0r, c0i, REAL_step, imag_step, cuda_results, W*H);
 
 	//Pega os resultados do Cuda e desaloca
-	cudaAssert(cudaMemcpy(results, cuda_results, W*H*sizeof(real), cudaMemcpyDeviceToHost));
-	/*
+	cudaAssert(cudaMemcpy(results, cuda_results, W*H*sizeof(REAL), cudaMemcpyDeviceToHost));
+
 	cudaFree(cu_c0r);
 	cudaFree(cu_c0i);
-	cudaFree(cu_real_step);
+	cudaFree(cu_REAL_step);
 	cudaFree(cu_imag_step);
-	*/
+
 	cudaFree(cuda_results);
 
 	const int N = W*H;
@@ -292,7 +295,7 @@ int main(int argc, char *argv[]){
 	if(cgpu == "cpu")
 		mandelbrot_omp<float>(argv);
 	else if(cgpu == "gpu")
-		mandelbrot_gpu<float>(argv);
+		mandelbrot_gpu(argv);
 	else if(cgpu == "seq")
 		mandelbrot_seq<float>(argv);
 	else
