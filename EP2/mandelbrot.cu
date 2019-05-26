@@ -1,8 +1,31 @@
 
 #include <iostream>
+#include <sys/time.h>
 #include <string>
 #include <complex>
 #include "png++/png.hpp"
+
+int timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y) {
+  /* Perform the carry for the later subtraction by updating y. */
+  if (x->tv_usec < y->tv_usec) {
+    int nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
+    y->tv_usec -= 1000000 * nsec;
+    y->tv_sec += nsec;
+  }
+  if (x->tv_usec - y->tv_usec > 1000000) {
+    int nsec = (x->tv_usec - y->tv_usec) / 1000000;
+    y->tv_usec += 1000000 * nsec;
+    y->tv_sec -= nsec;
+  }
+
+  /* Compute the time remaining to wait.
+     tv_usec is certainly positive. */
+  result->tv_sec = x->tv_sec - y->tv_sec;
+  result->tv_usec = x->tv_usec - y->tv_usec;
+
+  /* Return 1 if result is negative. */
+  return x->tv_sec < y->tv_sec;
+}
 
 using namespace std;
 
@@ -210,8 +233,8 @@ void mandelbrot_gpu(char *argv[]){
 	REAL REAL_step = (c1r - c0r)/W;
 	REAL imag_step = (c1i - c0i)/H;
 
-	printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
-	printf("step gpu %f %f %f %f\n", REAL_step, imag_step,(c1r - c0r), (c1i - c0i));
+	//printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
+	//printf("step gpu %f %f %f %f\n", REAL_step, imag_step,(c1r - c0r), (c1i - c0i));
 
 	png::image< png::rgb_pixel > imagem(W, H);
 	// png::uint_32 y;
@@ -251,11 +274,11 @@ void mandelbrot_gpu(char *argv[]){
 	//Dois problemas
 	//1: não sei se templates funcionam
 	//2: não sei se mandar diretamente c0r/etc funciona
-	printf("%f %f\n", REAL_step, imag_step);
+	//printf("%f %f\n", REAL_step, imag_step);
 	gpu_calculation<<<NUM_BLOCKS, THREADS_PER_BLOCK>>>(c0r, c0i, REAL_step, imag_step, cuda_results, W*H, W, H);
 
 	//Pega os resultados do Cuda e desaloca
-	printf("vo copia\n");
+	//printf("vo copia\n");
 	cudaAssert(cudaMemcpy(results, cuda_results, W*H*sizeof(REAL), cudaMemcpyDeviceToHost));
 
 	//cudaFree(cu_c0r);
@@ -290,7 +313,7 @@ void mandelbrot_gpu(char *argv[]){
 		}
 
 	}
-	printf("copiei\n");
+	//printf("copiei\n");
 
 	imagem.write(saida);
 
@@ -308,6 +331,11 @@ int main(int argc, char *argv[]){
 		cout << "mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>" << endl;
 		return 0;
 	}
+
+	struct timeval t1, t2, t3;
+
+	gettimeofday(&t1, NULL);
+
 	string cgpu(argv[7]);
 	if(cgpu == "cpu")
 		mandelbrot_omp<float>(argv);
@@ -317,6 +345,13 @@ int main(int argc, char *argv[]){
 		mandelbrot_seq<float>(argv);
 	else
 		cout << "Errrooou";
+
+	gettimeofday(&t2, NULL);
+
+    timeval_subtract(&t3, &t2, &t1);
+
+    printf("%lu.%06lu\n", t3.tv_sec, t3.tv_usec);
+
 	return 0;
 
 }
