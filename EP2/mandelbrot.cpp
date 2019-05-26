@@ -1,8 +1,31 @@
 
 #include <iostream>
+#include <sys/time.h>
 #include <string>
 #include <complex>
 #include "png++/png.hpp"
+
+int timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y) {
+  /* Perform the carry for the later subtraction by updating y. */
+  if (x->tv_usec < y->tv_usec) {
+    int nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
+    y->tv_usec -= 1000000 * nsec;
+    y->tv_sec += nsec;
+  }
+  if (x->tv_usec - y->tv_usec > 1000000) {
+    int nsec = (x->tv_usec - y->tv_usec) / 1000000;
+    y->tv_usec += 1000000 * nsec;
+    y->tv_sec -= nsec;
+  }
+
+  /* Compute the time remaining to wait.
+     tv_usec is certainly positive. */
+  result->tv_sec = x->tv_sec - y->tv_sec;
+  result->tv_usec = x->tv_usec - y->tv_usec;
+
+  /* Return 1 if result is negative. */
+  return x->tv_sec < y->tv_sec;
+}
 
 using namespace std;
 
@@ -49,7 +72,7 @@ void mandelbrot_seq(char *argv[]){
 					break;
 				}
 			}
-			printf("%d\n", j);
+			//printf("%d\n", j);
 
 			if (j == -1){
 				imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
@@ -85,9 +108,9 @@ void mandelbrot_omp(char *argv[]){
 	real real_step = (c1r - c0r)/W;
 	real imag_step = (c1i - c0i)/H;
 
-	printf("step cpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
-	printf("step cpu %f %f %f %f\n", real_step, imag_step,(c1r - c0r)/W, (c1i - c0i)/H);
-	printf("%d %d\n", W, H);
+	//printf("step cpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
+	//printf("step cpu %f %f %f %f\n", real_step, imag_step,(c1r - c0r)/W, (c1i - c0i)/H);
+	//printf("%d %d\n", W, H);
 
 	png::image< png::rgb_pixel > imagem(W, H);
 	png::uint_32 y;
@@ -97,8 +120,8 @@ void mandelbrot_omp(char *argv[]){
 		for (y = 0; y < imagem.get_height(); ++y){
 			for (x = 0; x < imagem.get_width(); ++x){
 				complex<real> point ( c0r+x*real_step , c0i+y*imag_step);
-				printf("%d %d\n",x,y );
-				printf("%f %f\n", std::real(point), std::imag(point));
+				//printf("%d %d\n",x,y );
+				//printf("%f %f\n", std::real(point), std::imag(point));
 				const int M = 1000;
 
 				// valor Zj que falhou
@@ -160,6 +183,10 @@ int main(int argc, char *argv[]){
 		return 0;
 	}
 
+	struct timeval t1, t2, t3;
+
+	gettimeofday(&t1, NULL);
+
 	string cgpu(argv[7]);
 	if(cgpu == "cpu")
 		mandelbrot_omp<float>(argv);
@@ -167,6 +194,13 @@ int main(int argc, char *argv[]){
 		mandelbrot_seq<float>(argv);
 	else
 		cout << "Errrooou";
+
+	gettimeofday(&t2, NULL);
+
+    timeval_subtract(&t3, &t2, &t1);
+
+    printf("%lu.%06lu\n", t3.tv_sec, t3.tv_usec);
+
 	return 0;
 
 }
