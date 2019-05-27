@@ -8,6 +8,7 @@ from scipy import mean
 colors = ['r','b','g']
 image_width = 1024
 image_heigh = 1024
+test_num = 20
 confidence = 0.95
 
 alg0_res = [] #seq
@@ -19,28 +20,33 @@ results = [alg0_res,alg1_res,alg2_res]
 os.popen('make')
 
 #seq
-for j in range(0,20):
+for j in range(0,test_num):
 	times = os.popen('./mbrot 0.27085 0.004640 0.27100 0.004810 {} {} seq 1 mb.png'.format(image_width,image_heigh)).read()
 	results[0].append(float(times))
 
 #cpu
-for j in range(0,20):
+for j in range(0,test_num):
 	times = os.popen('./mbrot 0.27085 0.004640 0.27100 0.004810 {} {} cpu 8 mb.png'.format(image_width,image_heigh)).read()
 	results[1].append(float(times))
 
 #gpu
-#não sei como rodar na gpu
+os.popen('make gpu')
+for j in range(0,test_num):
+	times = os.popen('/mbrot 0.27085 0.004640 0.27100 0.004810 {} {} gpu 8 mb.png'.format(image_width,image_heigh)).read()
+	results[2].append(float(times))
 
+#graficos
 plt.title("Comparação inicial dos tempos dos 3 algoritmos.")
-for i in range(0,2): #até 3 quando tiver a gpu
+for i in range(0,3):
 	y = np.array(results[i])
 	plt.hist(y, color=colors[i], histtype = 'step');
 
 plt.savefig('Graf/Comp3Alg.png')
 plt.show()
 
+#estatisticas
 algs = ["sequencial","com opemp","na gpu"]	
-for i in range(0,2): #até 3 quando tiver a gpu
+for i in range(0,3):
 	data = results[i]
 	n = len(data)
 	m = mean(data)
