@@ -6,8 +6,8 @@ from scipy.stats import sem, t
 from scipy import mean
 
 colors = ['r','b','g']
-image_width = 1024
-image_heigh = 1024
+image_width = 512
+image_heigh = 512
 test_num = 20
 confidence = 0.95
 
@@ -17,26 +17,28 @@ alg2_res = [] #gpu
 
 results = [alg0_res,alg1_res,alg2_res]
 
-os.popen('make')
 
 #seq
+print('testando sequencial')
 for j in range(0,test_num):
 	times = os.popen('./mbrot 0.27085 0.004640 0.27100 0.004810 {} {} seq 1 mb.png'.format(image_width,image_heigh)).read()
 	results[0].append(float(times))
 
 #cpu
+print('testando paralelo')
 for j in range(0,test_num):
 	times = os.popen('./mbrot 0.27085 0.004640 0.27100 0.004810 {} {} cpu 8 mb.png'.format(image_width,image_heigh)).read()
 	results[1].append(float(times))
 
 #gpu
-os.popen('make gpu')
+print('testando gpu')
 for j in range(0,test_num):
-	times = os.popen('/mbrot 0.27085 0.004640 0.27100 0.004810 {} {} gpu 8 mb.png'.format(image_width,image_heigh)).read()
+	times = os.popen('./mbrotgpu 0.27085 0.004640 0.27100 0.004810 {} {} gpu 8 mb.png'.format(image_width,image_heigh)).read()
 	results[2].append(float(times))
 
+algs = ["sequencial","com opemp","na gpu"]
 #graficos
-plt.title("Comparação inicial dos tempos dos 3 algoritmos.")
+plt.title("Comparação dos tempos dos 3 algoritmos com imagem {}x{}.".format(image_width,image_heigh))
 for i in range(0,3):
 	y = np.array(results[i])
 	plt.hist(y, color=colors[i], histtype = 'step');
@@ -45,7 +47,6 @@ plt.savefig('Graf/Comp3Alg.png')
 plt.show()
 
 #estatisticas
-algs = ["sequencial","com opemp","na gpu"]	
 for i in range(0,3):
 	data = results[i]
 	n = len(data)
