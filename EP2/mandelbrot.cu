@@ -50,27 +50,36 @@ void mandelbrot_seq(char *argv[]){
 
 	for (png::uint_32 y = 0; y < imagem.get_height(); ++y){
 		for (png::uint_32 x = 0; x < imagem.get_width(); ++x){
-			complex<real> point ( c0r+x*real_step , c0i+y*imag_step);
-			const int M = 1000;
+				real point_r = c0r+x*real_step;
+		        real point_i = c0i+y*imag_step;
 
-			// valor Zj que falhou
-			// -1 se não tiver falhado
-			int j = -1;
+				// printf("%f %f\n", point_r, point_i);
+		    	const int M = 1000;
 
-			//Valor da iteração passada
-			complex<real> old_num (0,0);
+				// valor Zj que falhou
+				// -1 se não tiver falhado
+				int j = -1;
 
-			//Calcula o mandebrot
-			for(int i = 1; i <= M; i++){
+				//Valor da iteração passada
+				real old_r = 0;
+				real old_i = 0;
+				real aux = 0;
 
+				//Calcula o mandebrot
+				for(int i = 1; i <= M; i++){
 
-				old_num = old_num*old_num + point;
+					//Calculo da nova iteração na mão
+					aux = (old_r * old_r) - (old_i * old_i) + point_r;
+					old_i = (2 * old_r * old_i) + point_i;
+					old_r = aux;
 
-				if( (abs(old_num) > 2 )){
-					j = i;
-					break;
+					//abs(complex) = sqrt(a*a + b*b)
+					//Passei a raiz do abs para outro lado
+					if( ((old_r * old_r + old_i * old_i) > 4 )){
+						j = i;
+						break;
+					}
 				}
-			}
 
 			if (j == -1){
 				imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
@@ -112,22 +121,32 @@ void mandelbrot_omp(char *argv[]){
 	#pragma omp parallel for collapse(2) num_threads(threads)
 		for (y = 0; y < imagem.get_height(); ++y){
 			for (x = 0; x < imagem.get_width(); ++x){
-				complex<real> point ( c0r+x*real_step , c0i+y*imag_step);
-				const int M = 1000;
+				real point_r = c0r+x*real_step;
+		        real point_i = c0i+y*imag_step;
+
+				// printf("%f %f\n", point_r, point_i);
+		    	const int M = 1000;
 
 				// valor Zj que falhou
 				// -1 se não tiver falhado
 				int j = -1;
 
 				//Valor da iteração passada
-				complex<real> old_num (0,0);
+				real old_r = 0;
+				real old_i = 0;
+				real aux = 0;
 
 				//Calcula o mandebrot
 				for(int i = 1; i <= M; i++){
 
-					old_num = old_num*old_num + point;
+					//Calculo da nova iteração na mão
+					aux = (old_r * old_r) - (old_i * old_i) + point_r;
+					old_i = (2 * old_r * old_i) + point_i;
+					old_r = aux;
 
-					if( (abs(old_num) > 2 )){
+					//abs(complex) = sqrt(a*a + b*b)
+					//Passei a raiz do abs para outro lado
+					if( ((old_r * old_r + old_i * old_i) > 4 )){
 						j = i;
 						break;
 					}
