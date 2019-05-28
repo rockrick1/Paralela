@@ -181,7 +181,7 @@ void cudaAssert(cudaError_t err)
 __global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_step, REAL *results, unsigned n, int W, int H){
 
 	// index = m*x + y
-	const int globalIndex = blockDim.x*blockIdx.x + threadIdx.x;
+	const long unsigned globalIndex = blockDim.x*blockIdx.x + threadIdx.x;
 
 	// printf("%d %d\n", blockIdx.x, threadIdx.x);
 
@@ -237,11 +237,6 @@ void mandelbrot_gpu(char *argv[]){
 	REAL c1r = stof(argv[3]);
 	REAL c1i = stof(argv[4]);
 
-	REAL *c0r_p = &c0r;
-	REAL *c0i_p = &c0i;
-	REAL *c1r_p = &c1r;
-	REAL *c1i_p = &c1i;
-
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
@@ -267,11 +262,6 @@ void mandelbrot_gpu(char *argv[]){
 
 	//Coisas da memoria do cuda
 	//Descomentar caso de erro <<<<<<<<<
-
-	REAL *cu_c0r;
-	REAL *cu_c0i;
-	REAL *cu_REAL_step;
-	REAL *cu_imag_step;
 
 	REAL *cuda_results;
 
@@ -307,7 +297,6 @@ void mandelbrot_gpu(char *argv[]){
 
 	cudaFree(cuda_results);
 
-	const int N = W*H;
 	const int M = 1000;
 	int j; //para ficar parecido aos outros
 
