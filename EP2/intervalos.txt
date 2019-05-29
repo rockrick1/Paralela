@@ -1,675 +1,100 @@
-imagem 512x512
+magem 512x512
 4 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
+Media do alg sequencial: 0.21713719999999997
+Intervalo de confiança: [0.2153378526662462 ; 0.21893654733375376]
 
 
-Media do alg com opemp: 0.06958715000000001
-Intervalo de confiança: [0.06704612162438645 ; 0.07212817837561358]
+Media do alg com opemp: 0.10171133333333335
+Intervalo de confiança: [0.09914241033692246 ; 0.10428025632974423]
 
 
-Media do alg na gpu: 0.0995667
-Intervalo de confiança: [0.09757988724241776 ; 0.10155351275758223]
-
-
-imagem 512x512
-8 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
-
-
-Media do alg com opemp: 0.06409345
-Intervalo de confiança: [0.06313180870757709 ; 0.0650550912924229]
-
-
-Media do alg na gpu: 0.1001803
-Intervalo de confiança: [0.09788911310424404 ; 0.10247148689575596]
+Media do alg na gpu: 0.10559279999999999
+Intervalo de confiança: [0.1034406974170585 ; 0.10774490258294148]
 
 
 imagem 512x512
-16 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
+4 threads na cpu e 512 threads por bloco na gpu
+Media do alg sequencial: 0.21713719999999997
+Intervalo de confiança: [0.2153378526662462 ; 0.21893654733375376]
 
 
-Media do alg com opemp: 0.06629750000000001
-Intervalo de confiança: [0.06396087218445064 ; 0.06863412781554938]
+Media do alg com opemp: 0.10171133333333335
+Intervalo de confiança: [0.09914241033692246 ; 0.10428025632974423]
 
 
-Media do alg na gpu: 0.09773765
-Intervalo de confiança: [0.09664374250716633 ; 0.09883155749283366]
-
-
-imagem 512x512
-4 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
-
-
-Media do alg com opemp: 0.0657305
-Intervalo de confiança: [0.06503565384899752 ; 0.06642534615100247]
-
-
-Media do alg na gpu: 0.098992
-Intervalo de confiança: [0.0974522015245199 ; 0.10053179847548009]
-
-
-imagem 512x512
-8 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
-
-
-Media do alg com opemp: 0.06354404999999999
-Intervalo de confiança: [0.06245077415172013 ; 0.06463732584827984]
-
-
-Media do alg na gpu: 0.09732525
-Intervalo de confiança: [0.0964031247277991 ; 0.0982473752722009]
-
-
-imagem 512x512
-16 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
-
-
-Media do alg com opemp: 0.06325004999999999
-Intervalo de confiança: [0.06252997065720332 ; 0.06397012934279665]
-
-
-Media do alg na gpu: 0.09980140000000001
-Intervalo de confiança: [0.09731475734344745 ; 0.10228804265655257]
-
-
-imagem 512x512
-4 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
-
-
-Media do alg com opemp: 0.06787950000000001
-Intervalo de confiança: [0.0654516420180176 ; 0.07030735798198241]
-
-
-Media do alg na gpu: 0.098621
-Intervalo de confiança: [0.09717844415988734 ; 0.10006355584011266]
-
-
-imagem 512x512
-8 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
-
-
-Media do alg com opemp: 0.06388655000000001
-Intervalo de confiança: [0.062466800266988996 ; 0.06530629973301104]
-
-
-Media do alg na gpu: 0.09815879999999999
-Intervalo de confiança: [0.09664345427737925 ; 0.09967414572262073]
-
-
-imagem 512x512
-16 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 0.1327312
-Intervalo de confiança: [0.13139964348953573 ; 0.13406275651046426]
-
-
-Media do alg com opemp: 0.06517735
-Intervalo de confiança: [0.06349177927044179 ; 0.0668629207295582]
-
-
-Media do alg na gpu: 0.09912075000000001
-Intervalo de confiança: [0.09799386657059408 ; 0.10024763342940593]
-
-
-imagem 1024x1024
-4 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.24582564999999995
-Intervalo de confiança: [0.2423866137533751 ; 0.2492646862466248]
-
-
-Media do alg na gpu: 0.266501
-Intervalo de confiança: [0.26478151049164506 ; 0.2682204895083549]
-
-
-imagem 1024x1024
-8 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.23493595000000003
-Intervalo de confiança: [0.23188698141791564 ; 0.23798491858208443]
-
-
-Media do alg na gpu: 0.26529299999999995
-Intervalo de confiança: [0.2631348520321085 ; 0.2674511479678914]
-
-
-imagem 1024x1024
-16 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.23248195
-Intervalo de confiança: [0.2273198673986939 ; 0.2376440326013061]
-
-
-Media do alg na gpu: 0.26374319999999996
-Intervalo de confiança: [0.2619578948002162 ; 0.2655285051997837]
-
-
-imagem 1024x1024
-4 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.24128470000000002
-Intervalo de confiança: [0.23737962914579766 ; 0.24518977085420238]
-
-
-Media do alg na gpu: 0.262576
-Intervalo de confiança: [0.26137327430596347 ; 0.2637787256940365]
-
-
-imagem 1024x1024
-8 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.22963180000000002
-Intervalo de confiança: [0.22743700676694878 ; 0.23182659323305127]
-
-
-Media do alg na gpu: 0.26254475000000005
-Intervalo de confiança: [0.26091089904620884 ; 0.26417860095379125]
-
-
-imagem 1024x1024
-16 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.2263593
-Intervalo de confiança: [0.22376067274550868 ; 0.22895792725449135]
-
-
-Media do alg na gpu: 0.26480515000000004
-Intervalo de confiança: [0.26253165719457977 ; 0.2670786428054203]
-
-
-imagem 1024x1024
-4 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.23989090000000002
-Intervalo de confiança: [0.23687393389490424 ; 0.2429078661050958]
-
-
-Media do alg na gpu: 0.2643588
-Intervalo de confiança: [0.2620159197062899 ; 0.2667016802937101]
-
-
-imagem 1024x1024
-8 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.23104524999999998
-Intervalo de confiança: [0.22732277217155297 ; 0.234767727828447]
-
-
-Media do alg na gpu: 0.2626678
-Intervalo de confiança: [0.26094577337826785 ; 0.26438982662173216]
-
-
-imagem 1024x1024
-16 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 0.4979669499999999
-Intervalo de confiança: [0.49296280445949464 ; 0.5029710955405051]
-
-
-Media do alg com opemp: 0.239845
-Intervalo de confiança: [0.23101248091613316 ; 0.24867751908386684]
-
-
-Media do alg na gpu: 0.26838814999999994
-Intervalo de confiança: [0.26507834813916625 ; 0.2716979518608336]
+Media do alg na gpu: 0.10410976666666666
+Intervalo de confiança: [0.1026455407239944 ; 0.10557399260933892]
 
 
 imagem 2048x2048
 4 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
+Media do alg sequencial: 3.2547114
+Intervalo de confiança: [3.223227296952891 ; 3.2861955030471095]
 
 
-Media do alg com opemp: 0.8967536500000002
-Intervalo de confiança: [0.8768065771342707 ; 0.9167007228657297]
+Media do alg com opemp: 1.3264612333333334
+Intervalo de confiança: [1.3210106163820552 ; 1.3319118502846117]
 
 
-Media do alg na gpu: 0.8573025
-Intervalo de confiança: [0.8530679880084043 ; 0.8615370119915956]
-
-
-imagem 2048x2048
-8 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
-
-
-Media do alg com opemp: 0.82717925
-Intervalo de confiança: [0.8214204132458299 ; 0.8329380867541701]
-
-
-Media do alg na gpu: 0.8519462499999999
-Intervalo de confiança: [0.8478754614664371 ; 0.8560170385335627]
+Media do alg na gpu: 0.9088526333333334
+Intervalo de confiança: [0.9032321643896183 ; 0.9144731022770486]
 
 
 imagem 2048x2048
-16 threads na cpu e 128 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
+4 threads na cpu e 512 threads por bloco na gpu
+Media do alg sequencial: 3.2547114
+Intervalo de confiança: [3.223227296952891 ; 3.2861955030471095]
 
 
-Media do alg com opemp: 0.8142220000000002
-Intervalo de confiança: [0.8103074736932536 ; 0.8181365263067468]
+Media do alg com opemp: 1.3264612333333334
+Intervalo de confiança: [1.3210106163820552 ; 1.3319118502846117]
 
 
-Media do alg na gpu: 0.8506636999999999
-Intervalo de confiança: [0.8486129390692678 ; 0.852714460930732]
-
-
-imagem 2048x2048
-4 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
-
-
-Media do alg com opemp: 0.8627506500000001
-Intervalo de confiança: [0.8607707463041454 ; 0.8647305536958547]
-
-
-Media do alg na gpu: 0.84894795
-Intervalo de confiança: [0.8476749191598878 ; 0.8502209808401122]
-
-
-imagem 2048x2048
-8 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
-
-
-Media do alg com opemp: 0.822258
-Intervalo de confiança: [0.8165049034993903 ; 0.8280110965006098]
-
-
-Media do alg na gpu: 0.8514579000000001
-Intervalo de confiança: [0.8480042956100734 ; 0.8549115043899268]
-
-
-imagem 2048x2048
-16 threads na cpu e 1024 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
-
-
-Media do alg com opemp: 0.8195333
-Intervalo de confiança: [0.8119581810098045 ; 0.8271084189901955]
-
-
-Media do alg na gpu: 0.8511813
-Intervalo de confiança: [0.8480800417280634 ; 0.8542825582719367]
-
-
-imagem 2048x2048
-4 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
-
-
-Media do alg com opemp: 0.8905678
-Intervalo de confiança: [0.8721689602022056 ; 0.9089666397977945]
-
-
-Media do alg na gpu: 0.85215815
-Intervalo de confiança: [0.850210208535219 ; 0.8541060914647809]
-
-
-imagem 2048x2048
-8 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
-
-
-Media do alg com opemp: 0.8279629999999999
-Intervalo de confiança: [0.8218885386540637 ; 0.834037461345936]
-
-
-Media do alg na gpu: 0.8474590999999998
-Intervalo de confiança: [0.8457142383690386 ; 0.849203961630961]
-
-
-imagem 2048x2048
-16 threads na cpu e 2048 threads por bloco na gpu
-Media do alg sequencial: 1.90308605
-Intervalo de confiança: [1.892948375266203 ; 1.9132237247337969]
-
-
-Media do alg com opemp: 0.81662635
-Intervalo de confiança: [0.8109211157728881 ; 0.8223315842271118]
-
-
-Media do alg na gpu: 0.8536786
-Intervalo de confiança: [0.8492125345399895 ; 0.8581446654600104]
+Media do alg na gpu: 0.9088276666666668
+Intervalo de confiança: [0.9065820626204709 ; 0.9110732707128627]
 
 
 imagem 512x512
 4 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
+Media do alg sequencial: 0.21742999999999998
+Intervalo de confiança: [0.21641076195554776 ; 0.2184492380444522]
 
-Media do alg com opemp: 0.0664654
-Intervalo de confiança: [0.06454506750392575 ; 0.06838573249607424]
+Media do alg com opemp: 0.10360909999999998
+Intervalo de confiança: [0.10068716657463843 ; 0.10653103342536153]
 
-Media do alg na gpu: 0.09616015
-Intervalo de confiança: [0.09468412857769645 ; 0.09763617142230355]
-
-imagem 512x512
-8 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
-
-Media do alg com opemp: 0.0649216
-Intervalo de confiança: [0.06408072326033191 ; 0.06576247673966808]
-
-Media do alg na gpu: 0.09649665
-Intervalo de confiança: [0.09515988484617391 ; 0.0978334151538261]
+Media do alg na gpu: 0.10074673333333332
+Intervalo de confiança: [0.09938957876959956 ; 0.10210388789706709]
 
 imagem 512x512
-16 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
+4 threads na cpu, 512 threads por bloco na gpu e DOUBLE
+Media do alg sequencial: 0.21742999999999998
+Intervalo de confiança: [0.21641076195554776 ; 0.2184492380444522]
 
-Media do alg com opemp: 0.0629722
-Intervalo de confiança: [0.06243821652284066 ; 0.06350618347715936]
+Media do alg com opemp: 0.10360909999999998
+Intervalo de confiança: [0.10068716657463843 ; 0.10653103342536153]
 
-Media do alg na gpu: 0.09603675
-Intervalo de confiança: [0.09502691523969374 ; 0.09704658476030627]
-
-imagem 512x512
-4 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
-
-Media do alg com opemp: 0.06546335
-Intervalo de confiança: [0.06496644579177342 ; 0.06596025420822658]
-
-Media do alg na gpu: 0.09752925
-Intervalo de confiança: [0.09635858615711396 ; 0.09869991384288604]
-
-imagem 512x512
-8 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
-
-Media do alg com opemp: 0.06398785
-Intervalo de confiança: [0.06263826306119528 ; 0.06533743693880471]
-
-Media do alg na gpu: 0.09720315
-Intervalo de confiança: [0.0961070595105193 ; 0.0982992404894807]
-
-imagem 512x512
-16 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
-
-Media do alg com opemp: 0.06331139999999999
-Intervalo de confiança: [0.06243414903310601 ; 0.06418865096689397]
-
-Media do alg na gpu: 0.09754579999999999
-Intervalo de confiança: [0.09610236027832479 ; 0.09898923972167518]
-
-imagem 512x512
-4 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
-
-Media do alg com opemp: 0.06609519999999999
-Intervalo de confiança: [0.06509452829054625 ; 0.06709587170945373]
-
-Media do alg na gpu: 0.09692895
-Intervalo de confiança: [0.0956876609091901 ; 0.0981702390908099]
-
-imagem 512x512
-8 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
-
-Media do alg com opemp: 0.06446969999999999
-Intervalo de confiança: [0.06314235877812706 ; 0.06579704122187292]
-
-Media do alg na gpu: 0.09757965
-Intervalo de confiança: [0.09637612094429096 ; 0.09878317905570905]
-
-imagem 512x512
-16 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.13077339999999998
-Intervalo de confiança: [0.12990236093219817 ; 0.1316444390678018]
-
-Media do alg com opemp: 0.06401509999999999
-Intervalo de confiança: [0.06193264914698348 ; 0.0660975508530165]
-
-Media do alg na gpu: 0.09715575
-Intervalo de confiança: [0.09577378588749927 ; 0.09853771411250073]
-
-imagem 1024x1024
-4 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.23633824999999997
-Intervalo de confiança: [0.23557361248487985 ; 0.2371028875151201]
-
-Media do alg na gpu: 0.26174225000000007
-Intervalo de confiança: [0.2596795707514429 ; 0.26380492924855725]
-
-imagem 1024x1024
-8 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.22657865000000005
-Intervalo de confiança: [0.22499632951754495 ; 0.22816097048245515]
-
-Media do alg na gpu: 0.26193925
-Intervalo de confiança: [0.26000394194040743 ; 0.2638745580595926]
-
-imagem 1024x1024
-16 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.22430124999999998
-Intervalo de confiança: [0.22210726473732811 ; 0.22649523526267185]
-
-Media do alg na gpu: 0.26274404999999995
-Intervalo de confiança: [0.26092569081664274 ; 0.26456240918335716]
-
-imagem 1024x1024
-4 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.23782539999999996
-Intervalo de confiança: [0.23574394722253725 ; 0.23990685277746268]
-
-Media do alg na gpu: 0.26316724999999996
-Intervalo de confiança: [0.2613760773804716 ; 0.26495842261952834]
-
-imagem 1024x1024
-8 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.22914284999999998
-Intervalo de confiança: [0.22626438207758223 ; 0.23202131792241773]
-
-Media do alg na gpu: 0.26168729999999996
-Intervalo de confiança: [0.26015020008665685 ; 0.26322439991334307]
-
-imagem 1024x1024
-16 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.22390684999999996
-Intervalo de confiança: [0.2224601996289535 ; 0.22535350037104643]
-
-Media do alg na gpu: 0.26331994999999997
-Intervalo de confiança: [0.2616047486997562 ; 0.26503515130024374]
-
-imagem 1024x1024
-4 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.24045845
-Intervalo de confiança: [0.23595828388635096 ; 0.24495861611364902]
-
-Media do alg na gpu: 0.26302790000000004
-Intervalo de confiança: [0.26095815176797954 ; 0.26509764823202053]
-
-imagem 1024x1024
-8 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.22924595
-Intervalo de confiança: [0.22588291644444114 ; 0.23260898355555887]
-
-Media do alg na gpu: 0.26271985
-Intervalo de confiança: [0.26102512931988114 ; 0.2644145706801188]
-
-imagem 1024x1024
-16 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 0.48956685
-Intervalo de confiança: [0.48855965392117284 ; 0.49057404607882715]
-
-Media do alg com opemp: 0.22457434999999998
-Intervalo de confiança: [0.22309145303203032 ; 0.22605724696796964]
-
-Media do alg na gpu: 0.26295465
-Intervalo de confiança: [0.2610680657253308 ; 0.2648412342746692]
+Media do alg na gpu: 0.10077343333333331
+Intervalo de confiança: [0.09988637756886048 ; 0.10166048909780614]
 
 imagem 2048x2048
 4 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
+Media do alg sequencial: 3.2852651999999996
+Intervalo de confiança: [3.2654011012991258 ; 3.3051292987008734]
 
-Media do alg com opemp: 0.8604972
-Intervalo de confiança: [0.859442955686606 ; 0.8615514443133939]
+Media do alg com opemp: 1.4734798666666664
+Intervalo de confiança: [1.4258202686775572 ; 1.5211394646557757]
 
-Media do alg na gpu: 0.8512962999999999
-Intervalo de confiança: [0.847747788757221 ; 0.8548448112427788]
-
-imagem 2048x2048
-8 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
-
-Media do alg com opemp: 0.8205075500000001
-Intervalo de confiança: [0.814622945257684 ; 0.8263921547423162]
-
-Media do alg na gpu: 0.8548943
-Intervalo de confiança: [0.8482924912956933 ; 0.8614961087043067]
+Media do alg na gpu: 0.8876994
+Intervalo de confiança: [0.8813657962733281 ; 0.8940330037266719]
 
 imagem 2048x2048
-16 threads na cpu, 128 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
+4 threads na cpu, 512 threads por bloco na gpu e DOUBLE
+Media do alg sequencial: 3.2852651999999996
+Intervalo de confiança: [3.2654011012991258 ; 3.3051292987008734]
 
-Media do alg com opemp: 0.863486
-Intervalo de confiança: [0.8427440424265451 ; 0.8842279575734548]
+Media do alg com opemp: 1.4734798666666664
+Intervalo de confiança: [1.4258202686775572 ; 1.5211394646557757]
 
-Media do alg na gpu: 0.8559718500000001
-Intervalo de confiança: [0.8487228985436832 ; 0.863220801456317]
-
-imagem 2048x2048
-4 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
-
-Media do alg com opemp: 0.8904720500000002
-Intervalo de confiança: [0.8730166839265004 ; 0.9079274160734999]
-
-Media do alg na gpu: 0.8549309
-Intervalo de confiança: [0.8468200234701398 ; 0.8630417765298602]
-
-imagem 2048x2048
-8 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
-
-Media do alg com opemp: 0.87679385
-Intervalo de confiança: [0.857179238676239 ; 0.896408461323761]
-
-Media do alg na gpu: 0.86474945
-Intervalo de confiança: [0.8571242104400502 ; 0.8723746895599499]
-
-imagem 2048x2048
-16 threads na cpu, 1024 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
-
-Media do alg com opemp: 0.8321440000000001
-Intervalo de confiança: [0.8203817966023597 ; 0.8439062033976406]
-
-Media do alg na gpu: 0.8505289999999999
-Intervalo de confiança: [0.8462366599316017 ; 0.854821340068398]
-
-imagem 2048x2048
-4 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
-
-Media do alg com opemp: 0.92498145
-Intervalo de confiança: [0.8979514038095511 ; 0.9520114961904489]
-
-Media do alg na gpu: 0.88330635
-Intervalo de confiança: [0.8656247017836786 ; 0.9009879982163215]
-
-imagem 2048x2048
-8 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
-
-Media do alg com opemp: 0.8728712500000002
-Intervalo de confiança: [0.8561149914605027 ; 0.8896275085394977]
-
-Media do alg na gpu: 0.8619532499999998
-Intervalo de confiança: [0.8564831456205261 ; 0.8674233543794735]
-
-imagem 2048x2048
-16 threads na cpu, 2048 threads por bloco na gpu e DOUBLE
-Media do alg sequencial: 1.874775
-Intervalo de confiança: [1.8714120797003704 ; 1.8781379202996298]
-
-Media do alg com opemp: 0.8365240999999999
-Intervalo de confiança: [0.8245655502616301 ; 0.8484826497383696]
-
-Media do alg na gpu: 0.8584613000000001
-Intervalo de confiança: [0.8543146202584491 ; 0.8626079797415511]
+Media do alg na gpu: 0.8944052333333332
+Intervalo de confiança: [0.888548033921173 ; 0.9002624327454934]
 
