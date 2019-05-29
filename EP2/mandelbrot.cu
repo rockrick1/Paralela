@@ -255,7 +255,7 @@ void mandelbrot_gpu(char *argv[]){
 	// png::uint_32 x;
 
 	//Cuda Stuff
-	const int THREADS_PER_BLOCK = 128;
+	const int THREADS_PER_BLOCK = threads;
 	const int NUM_BLOCKS = (W*H + THREADS_PER_BLOCK-1)/THREADS_PER_BLOCK;
 	//Guarda os resultados calculados na GPU
 	REAL *results = new REAL[W*H];
@@ -406,7 +406,7 @@ void mandelbrot_gpu_double(char *argv[]){
 	// png::uint_32 x;
 
 	//Cuda Stuff
-	const int THREADS_PER_BLOCK = 128;
+	const int THREADS_PER_BLOCK = threads;
 	const int NUM_BLOCKS = (W*H + THREADS_PER_BLOCK-1)/THREADS_PER_BLOCK;
 	//Guarda os resultados calculados na GPU
 	double *results = new double[W*H];
