@@ -181,21 +181,36 @@ int main(int argc, char *argv[]){
 	if(argc < 10){
 		cout << "Incorrect Number of Args" << endl;
 		cout << "Usage:" << endl;
-		cout << "mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>" << endl;
+		cout << "mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA> <FLOAT/DOUBLE>" << endl;
 		return 0;
 	}
 
 	struct timeval t1, t2, t3;
 
+	string cgpu(argv[7]);
+	string flo_do = "";
+
+	if (argc > 10)
+		flo_do = argv[10];
+
 	gettimeofday(&t1, NULL);
 
-	string cgpu(argv[7]);
-	if(cgpu == "cpu")
-		mandelbrot_omp<float>(argv);
-	else if(cgpu == "seq")
-		mandelbrot_seq<float>(argv);
-	else
-		cout << "Errrooou";
+	if (flo_do == "double") {
+		if(cgpu == "cpu")
+			mandelbrot_omp<double>(argv);
+		else if(cgpu == "seq")
+			mandelbrot_seq<double>(argv);
+		else
+			cout << "Errrooou";
+	}
+	else {
+		if(cgpu == "cpu")
+			mandelbrot_omp<float>(argv);
+		else if(cgpu == "seq")
+			mandelbrot_seq<float>(argv);
+		else
+			cout << "Errrooou";
+	}
 
 	gettimeofday(&t2, NULL);
 
