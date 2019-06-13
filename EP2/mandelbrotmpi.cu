@@ -39,8 +39,6 @@ void mandelbrot_seq(char *argv[]){
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
-	int threads = stoi(argv[8]);
-
 	REAL REAL_step = (c1r - c0r)/W;
 	REAL imag_step = (c1i - c0i)/H;
 
@@ -60,7 +58,6 @@ void mandelbrot_seq(char *argv[]){
     	size++
     }
     else inicial = rank*size + r;
-	const int NUM_BLOCKS = (size + threads-1)/threads;
 	int *results = new int[size];
     for(int k = 0; i < size; k++){
     	int x = (k + inicial)/W;
@@ -181,7 +178,6 @@ void mandelbrot_omp(char *argv[]){
     	size++
     }
     else inicial = rank*size + r;
-	const int NUM_BLOCKS = (size + threads-1)/threads;
 	int *results = new int[size];
 	// #pragma AQUI
     for(int k = 0; i < size; k++){
@@ -351,20 +347,20 @@ void mandelbrot_gpu(char *argv[]){
 
 	//printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
 	//printf("step gpu %f %f %f %f\n", REAL_step, imag_step,(c1r - c0r), (c1i - c0i));
-	int world_size;
+	int world_size; //numero de processos
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-    int rank;
+    int rank; //rank do processo
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int size = (W*H)/world_size;
-    int inicial;
-    int r = (W*H)%world_size;
+    int size = (W*H)/world_size; //tamanho do vetor que cada processo vai calcular
+    int inicial = rank*size; //indice que representa o primeiro ponto que cada processo vai calcular
+    int r = (W*H)%world_size; //arruma size e inicial para quantidades de pixels não divisivel pela quantidade de processos
     if(rank < r){
-    	inicial =  rank*size + rank;
+    	inicial += rank;
     	size++
     }
-    else inicial = rank*size + r;
+    else inicial += r;
 	const int NUM_BLOCKS = (size + threads-1)/threads;
 	int *results = new int[size];
 	int *cuda_results;
@@ -379,8 +375,8 @@ void mandelbrot_gpu(char *argv[]){
 		int j; //para ficar parecido aos outros
 		int m_size = size;
 		for(int i = 0; i < world_size; i++){
-
-			if(i >= r) m_size = (W*H)/world_size;
+			// recebe o vetor com os os resultados de se e quando convergiu
+			if(i >= r) m_size = (W*H)/world_size; 
 			if(i != 0) MPI_Recv(results, m_size, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 			for(int k = 0; k < m_size; k++)
@@ -389,10 +385,10 @@ void mandelbrot_gpu(char *argv[]){
 				// int y = p%N;
 
 					j = results[k];
-					// if (j!=23)
-						// printf("%d:%d - %d\n",x,y, j);
+					//calcula o indice dos pixels baseado no indice do vetor de resultado 
 					int x = k/W;
-					int y = k%H;
+					int y = k%H; 
+					//preenche a imagem
 					if (j == -1)
 						imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 					else {
@@ -418,40 +414,7 @@ void mandelbrot_gpu(char *argv[]){
 	//Sempre bom desalocar
 	delete [] results;
 
-    }
-	// png::uint_32 y;
-	// png::uint_32 x;
-
-	//Cuda Stuff
-	
-	//Guarda os resultados calculados na GPU
-	
-
-	//Coisas da memoria do cuda
-	//Descomentar caso de erro <<<<<<<<<
-
-	//Aloca tudo
-	//cudaAssert(cudaMalloc(&cu_c0r, sizeof(REAL*)));
-	//cudaAssert(cudaMalloc(&cu_c0i, sizeof(REAL*)));
-	//cudaAssert(cudaMalloc(&cu_REAL_step, sizeof(REAL*)));
-	//cudaAssert(cudaMalloc(&cu_imag_step, sizeof(REAL*)));
-
-	
-
-	//Copia tudo
-	// cudaAssert(cudaMemcpy((void**)c0r_p, cu_c0r, sizeof(*c0r_p), cudaMemcpyHostToDevice));
-	// cudaAssert(cudaMemcpy((void**)c0i_p, cu_c0i, sizeof(*c0i_p), cudaMemcpyHostToDevice));
-	// cudaAssert(cudaMemcpy((void**)c1r_p, cu_REAL_step, sizeof(*c1r_p), cudaMemcpyHostToDevice));
-	// cudaAssert(cudaMemcpy((void**)c1i_p, cu_imag_step, sizeof(*c1i_p), cudaMemcpyHostToDevice));
-
-
-	//Dois problemas
-	//1: não sei se templates funcionam
-	//2: não sei se mandar diretamente c0r/etc funciona
-
-	
 }
-
 int main(int argc, char *argv[]){
 	//processar os args
 	//mbrot <C0_REAL> <C0_IMAG> <C1_REAL> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
