@@ -278,7 +278,7 @@ void cudaAssert(cudaError_t err)
 }
 
 
-__global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_step, REAL *results, unsigned n, int W, int H, int inicial){
+__global__ void gpu_calculation(REAL c0r, REAL c0i, REAL REAL_step, REAL imag_step, int *results, unsigned n, int W, int H, int inicial){
 
 	// index = m*x + y
 	const long unsigned globalIndex = blockDim.x*blockIdx.x + threadIdx.x;
