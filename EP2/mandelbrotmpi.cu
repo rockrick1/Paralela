@@ -55,11 +55,11 @@ void mandelbrot_seq(char *argv[]){
     int r = (W*H)%world_size;
     if(rank < r){
     	inicial =  rank*size + rank;
-    	size++
+    	size++;
     }
     else inicial = rank*size + r;
 	int *results = new int[size];
-    for(int k = 0; i < size; k++){
+    for(int k = 0; k < size; k++){
     	int x = (k + inicial)/W;
 		int y = (k + inicial)%H;
 		// printf("%d %d    %d\n", x, y, n);
@@ -110,34 +110,35 @@ void mandelbrot_seq(char *argv[]){
 			if(i >= r) m_size = (W*H)/world_size;
 			if(i != 0) MPI_Recv(results, m_size, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-			for(int k = 0; k < m_size; k++)
-				//Acho que o X e o Y é algo assim
-				// int x = p/N;
-				// int y = p%N;
+			for(int k = 0; k < m_size; k++) {
+			//Acho que o X e o Y é algo assim
+			// int x = p/N;
+			// int y = p%N;
 
-					j = results[k];
-					// if (j!=23)
-						// printf("%d:%d - %d\n",x,y, j);
-					int x = k/W;
-					int y = k%H;
-					if (j == -1)
-						imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
-					else {
-						png::uint_32 r = (M-j*255)/M;
-						png::uint_32 g = (M-j*239)/M + 16;
-						png::uint_32 b = (M-j*191)/M + 64;
-						imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
-					}
-			i++
+				j = results[k];
+				// if (j!=23)
+					// printf("%d:%d - %d\n",x,y, j);
+				int x = k/W;
+				int y = k%H;
+				if (j == -1)
+					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
+				else {
+					png::uint_32 r = (M-j*255)/M;
+					png::uint_32 g = (M-j*239)/M + 16;
+					png::uint_32 b = (M-j*191)/M + 64;
+					imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
+				}
+            }
+			i++;
 			if(i>= r){
-				m_size = (i+1)*size + (i+1)rank;
+				m_size = (i+1)*size + (i+1)*rank;
 			}
-			
+
 		}
 		imagem.write(saida);
 	}
 	else{
-		MPI_Send(results, size, MPI_INT, 0, 0, MPI_COMM_WORLD)
+		MPI_Send(results, size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 	}
 	//printf("copiei\n");
 
@@ -175,12 +176,12 @@ void mandelbrot_omp(char *argv[]){
     int r = (W*H)%world_size;
     if(rank < r){
     	inicial =  rank*size + rank;
-    	size++
+    	size++;
     }
     else inicial = rank*size + r;
 	int *results = new int[size];
 	// #pragma AQUI
-    for(int k = 0; i < size; k++){
+    for(int k = 0; k < size; k++){
     	int x = (k + inicial)/W;
 		int y = (k + inicial)%H;
 		// printf("%d %d    %d\n", x, y, n);
@@ -231,34 +232,35 @@ void mandelbrot_omp(char *argv[]){
 			if(i >= r) m_size = (W*H)/world_size;
 			if(i != 0) MPI_Recv(results, m_size, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-			for(int k = 0; k < m_size; k++)
-				//Acho que o X e o Y é algo assim
-				// int x = p/N;
-				// int y = p%N;
+			for(int k = 0; k < m_size; k++) {
+			//Acho que o X e o Y é algo assim
+			// int x = p/N;
+			// int y = p%N;
 
-					j = results[k];
-					// if (j!=23)
-						// printf("%d:%d - %d\n",x,y, j);
-					int x = k/W;
-					int y = k%H;
-					if (j == -1)
-						imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
-					else {
-						png::uint_32 r = (M-j*255)/M;
-						png::uint_32 g = (M-j*239)/M + 16;
-						png::uint_32 b = (M-j*191)/M + 64;
-						imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
-					}
-			i++
+				j = results[k];
+				// if (j!=23)
+					// printf("%d:%d - %d\n",x,y, j);
+				int x = k/W;
+				int y = k%H;
+				if (j == -1)
+					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
+				else {
+					png::uint_32 r = (M-j*255)/M;
+					png::uint_32 g = (M-j*239)/M + 16;
+					png::uint_32 b = (M-j*191)/M + 64;
+					imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
+				}
+            }
+			i++;
 			if(i>= r){
-				m_size = (i+1)*size + (i+1)rank;
+				m_size = (i+1)*size + (i+1)*rank;
 			}
-			
+
 		}
 		imagem.write(saida);
 	}
 	else{
-		MPI_Send(results, size, MPI_INT, 0, 0, MPI_COMM_WORLD)
+		MPI_Send(results, size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 	}
 	//printf("copiei\n");
 
@@ -345,6 +347,8 @@ void mandelbrot_gpu(char *argv[]){
 	REAL REAL_step = (c1r - c0r)/W;
 	REAL imag_step = (c1i - c0i)/H;
 
+    int THREADS_PER_BLOCK = 128;
+
 	//printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
 	//printf("step gpu %f %f %f %f\n", REAL_step, imag_step,(c1r - c0r), (c1i - c0i));
 	int world_size; //numero de processos
@@ -358,7 +362,7 @@ void mandelbrot_gpu(char *argv[]){
     int r = (W*H)%world_size; //arruma size e inicial para quantidades de pixels não divisivel pela quantidade de processos
     if(rank < r){
     	inicial += rank;
-    	size++
+    	size++;
     }
     else inicial += r;
 	const int NUM_BLOCKS = (size + threads-1)/threads;
@@ -376,37 +380,38 @@ void mandelbrot_gpu(char *argv[]){
 		int m_size = size;
 		for(int i = 0; i < world_size; i++){
 			// recebe o vetor com os os resultados de se e quando convergiu
-			if(i >= r) m_size = (W*H)/world_size; 
+			if(i >= r) m_size = (W*H)/world_size;
 			if(i != 0) MPI_Recv(results, m_size, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-			for(int k = 0; k < m_size; k++)
+			for(int k = 0; k < m_size; k++) {
 				//Acho que o X e o Y é algo assim
 				// int x = p/N;
 				// int y = p%N;
 
-					j = results[k];
-					//calcula o indice dos pixels baseado no indice do vetor de resultado 
-					int x = k/W;
-					int y = k%H; 
-					//preenche a imagem
-					if (j == -1)
-						imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
-					else {
-						png::uint_32 r = (M-j*255)/M;
-						png::uint_32 g = (M-j*239)/M + 16;
-						png::uint_32 b = (M-j*191)/M + 64;
-						imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
-					}
-			i++
+				j = results[k];
+				//calcula o indice dos pixels baseado no indice do vetor de resultado
+				int x = k/W;
+				int y = k%H;
+				//preenche a imagem
+				if (j == -1)
+					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
+				else {
+					png::uint_32 r = (M-j*255)/M;
+					png::uint_32 g = (M-j*239)/M + 16;
+					png::uint_32 b = (M-j*191)/M + 64;
+					imagem.set_pixel(x, y, png::rgb_pixel(r, g, b));
+				}
+            }
+			i++;
 			if(i>= r){
-				m_size = (i+1)*size + (i+1)rank;
+				m_size = (i+1)*size + (i+1)*rank;
 			}
-			
+
 		}
 		imagem.write(saida);
 	}
 	else{
-		MPI_Send(results, size, MPI_INT, 0, 0, MPI_COMM_WORLD)
+		MPI_Send(results, size, MPI_INT, 0, 0, MPI_COMM_WORLD);
 	}
 	//printf("copiei\n");
 
