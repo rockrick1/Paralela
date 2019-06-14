@@ -1,4 +1,4 @@
-#include <mpicxx.h>
+#include <mpi.h>
 #include <iostream>
 #include <sys/time.h>
 #include <string>
@@ -158,7 +158,7 @@ void mandelbrot_omp(char *argv[]){
 	real real_step = (c1r - c0r)/W;
 	real imag_step = (c1i - c0i)/H;
 
-	//printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
+	// printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
 	//printf("step gpu %f %f %f %f\n", real_step, imag_step,(c1r - c0r), (c1i - c0i));
 	int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
@@ -175,7 +175,7 @@ void mandelbrot_omp(char *argv[]){
     }
     else inicial = rank*size + r;
 	int *results = new int[size];
-	// #pragma AQUI
+	#pragma omp parallel for num_threads(threads)
     for(int k = 0; k < size; k++){
     	int x = (k + inicial)/W;
 		int y = (k + inicial)%H;
@@ -259,6 +259,7 @@ void mandelbrot_omp(char *argv[]){
 	delete [] results;
 }
 
+/*
 //Função que furtei do add.cu
 void cudaAssert(cudaError_t err)
 {
@@ -405,6 +406,8 @@ void mandelbrot_gpu(char *argv[]){
 	delete [] results;
 
 }
+*/
+
 int main(int argc, char *argv[]){
 	//processar os args
 	//mbrot <C0_real> <C0_IMAG> <C1_real> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
@@ -423,8 +426,8 @@ int main(int argc, char *argv[]){
 	string cgpu(argv[7]);
 	if(cgpu == "cpu")
 		mandelbrot_omp<float>(argv);
-	else if(cgpu == "gpu")
-		mandelbrot_gpu(argv);
+	// else if(cgpu == "gpu")
+	// 	mandelbrot_gpu(argv);
 	else if(cgpu == "seq")
 		mandelbrot_seq<float>(argv);
 	else
