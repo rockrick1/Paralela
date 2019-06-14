@@ -49,6 +49,7 @@ void mandelbrot_seq(char *argv[]){
 
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    printf("%d %d\n", rank, world_size);
 
     int size = (W*H)/world_size;
     int inicial;

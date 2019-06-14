@@ -1,4 +1,4 @@
-#include <mpicxx.h>
+#include <mpi.h>
 #include <iostream>
 #include <sys/time.h>
 #include <string>
@@ -29,21 +29,21 @@ int timeval_subtract (struct timeval *result, struct timeval *x, struct timeval 
 
 using namespace std;
 
-template<class real> // para trocar entre float e double
+// template<class float> // para trocar entre float e double
 void mandelbrot_seq(char *argv[]){
-	real c0r = stof(argv[1]);
-	real c0i = stof(argv[2]);
-	real c1r = stof(argv[3]);
-	real c1i = stof(argv[4]);
+	float c0r = stof(argv[1]);
+	float c0i = stof(argv[2]);
+	float c1r = stof(argv[3]);
+	float c1i = stof(argv[4]);
 
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
-	real real_step = (c1r - c0r)/W;
-	real imag_step = (c1i - c0i)/H;
+	float float_step = (c1r - c0r)/W;
+	float imag_step = (c1i - c0i)/H;
 
 	//printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
-	//printf("step gpu %f %f %f %f\n", real_step, imag_step,(c1r - c0r), (c1i - c0i));
+	//printf("step gpu %f %f %f %f\n", float_step, imag_step,(c1r - c0r), (c1i - c0i));
 	int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
@@ -63,8 +63,8 @@ void mandelbrot_seq(char *argv[]){
     	int x = (k + inicial)/W;
 		int y = (k + inicial)%H;
 		// printf("%d %d    %d\n", x, y, n);
-        real point_r = c0r+x*real_step;
-        real point_i = c0i+y*imag_step;
+        float point_r = c0r+x*float_step;
+        float point_i = c0i+y*imag_step;
 
 		// printf("%f %f\n", point_r, point_i);
     	const int M = 1000;
@@ -74,9 +74,9 @@ void mandelbrot_seq(char *argv[]){
 		int j = -1;
 
 		//Valor da iteração passada
-		real old_r = 0;
-		real old_i = 0;
-		real aux = 0;
+		float old_r = 0;
+		float old_i = 0;
+		float aux = 0;
 
 		//Calcula o mandebrot
 		for(int i = 1; i <= M; i++){
@@ -143,23 +143,23 @@ void mandelbrot_seq(char *argv[]){
 }
 
 
-template<class real> // para trocar entre float e double
+// template<class float> // para trocar entre float e double
 void mandelbrot_omp(char *argv[]){
-	real c0r = stof(argv[1]);
-	real c0i = stof(argv[2]);
-	real c1r = stof(argv[3]);
-	real c1i = stof(argv[4]);
+	float c0r = stof(argv[1]);
+	float c0i = stof(argv[2]);
+	float c1r = stof(argv[3]);
+	float c1i = stof(argv[4]);
 
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
 	int threads = stoi(argv[8]);
 
-	real real_step = (c1r - c0r)/W;
-	real imag_step = (c1i - c0i)/H;
+	float float_step = (c1r - c0r)/W;
+	float imag_step = (c1i - c0i)/H;
 
-	//printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
-	//printf("step gpu %f %f %f %f\n", real_step, imag_step,(c1r - c0r), (c1i - c0i));
+	// printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
+	//printf("step gpu %f %f %f %f\n", float_step, imag_step,(c1r - c0r), (c1i - c0i));
 	int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
@@ -175,13 +175,13 @@ void mandelbrot_omp(char *argv[]){
     }
     else inicial = rank*size + r;
 	int *results = new int[size];
-	// #pragma AQUI
+	#pragma omp parallel for num_threads(threads)
     for(int k = 0; k < size; k++){
     	int x = (k + inicial)/W;
 		int y = (k + inicial)%H;
 		// printf("%d %d    %d\n", x, y, n);
-        real point_r = c0r+x*real_step;
-        real point_i = c0i+y*imag_step;
+        float point_r = c0r+x*float_step;
+        float point_i = c0i+y*imag_step;
 
 		// printf("%f %f\n", point_r, point_i);
     	const int M = 1000;
@@ -191,9 +191,9 @@ void mandelbrot_omp(char *argv[]){
 		int j = -1;
 
 		//Valor da iteração passada
-		real old_r = 0;
-		real old_i = 0;
-		real aux = 0;
+		float old_r = 0;
+		float old_i = 0;
+		float aux = 0;
 
 		//Calcula o mandebrot
 		for(int i = 1; i <= M; i++){
@@ -259,6 +259,7 @@ void mandelbrot_omp(char *argv[]){
 	delete [] results;
 }
 
+/*
 //Função que furtei do add.cu
 void cudaAssert(cudaError_t err)
 {
@@ -405,6 +406,8 @@ void mandelbrot_gpu(char *argv[]){
 	delete [] results;
 
 }
+*/
+
 int main(int argc, char *argv[]){
 	//processar os args
 	//mbrot <C0_real> <C0_IMAG> <C1_real> <C1_IMAG> <W> <H> <CPU/GPU> <THREADS> <SAIDA>
@@ -422,11 +425,11 @@ int main(int argc, char *argv[]){
 
 	string cgpu(argv[7]);
 	if(cgpu == "cpu")
-		mandelbrot_omp<float>(argv);
-	else if(cgpu == "gpu")
-		mandelbrot_gpu(argv);
+		mandelbrot_omp(argv);
+	// else if(cgpu == "gpu")
+	// 	mandelbrot_gpu(argv);
 	else if(cgpu == "seq")
-		mandelbrot_seq<float>(argv);
+		mandelbrot_seq(argv);
 	else
 		cout << "Errrooou";
 
