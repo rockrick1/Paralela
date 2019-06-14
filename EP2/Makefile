@@ -37,7 +37,7 @@ testgpu:
 	./mbrotgpu 0.27085 0.004640 0.27100 0.004810 $(IMGSIZE) $(IMGSIZE) gpu 10 mbgpu.png
 
 testmpi:
-	mpirun -n 3 ./mbrotmpi 0.27085 0.004640 0.27100 0.004810 $(IMGSIZE) $(IMGSIZE) seq 1 mbmpi.png
+	mpirun -n 10 ./mbrotmpi 0.27085 0.004640 0.27100 0.004810 $(IMGSIZE) $(IMGSIZE) seq 1 mbmpi.png
 	mpirun -n 10 ./mbrotmpi 0.27085 0.004640 0.27100 0.004810 $(IMGSIZE) $(IMGSIZE) cpu 4 mbmpi2.png
 
 .PHONY: gpu

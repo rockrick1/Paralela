@@ -100,6 +100,7 @@ void mandelbrot_seq(char *argv[]){
 		results[k] = j;
 		// printf("%d\n", j);
 	}
+    printf("oi to no seq\n");
     if(rank == 0){
 		png::image< png::rgb_pixel > imagem(W, H);
 		string saida = argv[9];
@@ -117,10 +118,9 @@ void mandelbrot_seq(char *argv[]){
 			// int y = p%N;
 
 				j = results[k];
-				// if (j!=23)
-					// printf("%d:%d - %d\n",x,y, j);
-				int x = k/W;
-				int y = k%H;
+                int x, y;
+                x = ((i*m_size + r + k)/H);
+                y = (i*m_size + r + k)%W;
 				if (j == -1)
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 				else {
@@ -234,10 +234,9 @@ void mandelbrot_omp(char *argv[]){
 			// int y = p%N;
 
 				j = results[k];
-				// if (j!=23)
-					// printf("%d:%d - %d\n",x,y, j);
-				int x = k/W;
-				int y = k%H;
+                int x, y;
+                x = ((i*m_size + r + k)/H);
+                y = (i*m_size + r + k)%W;
 				if (j == -1)
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 				else {
