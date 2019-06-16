@@ -29,21 +29,22 @@ int timeval_subtract (struct timeval *result, struct timeval *x, struct timeval 
 
 using namespace std;
 
-// template<class float> // para trocar entre float e double
+///////////////////////////////////////SEQ//////////////////////////////////////
+template<class real> // para trocar entre float e double
 void mandelbrot_seq(char *argv[]){
-	float c0r = stof(argv[1]);
-	float c0i = stof(argv[2]);
-	float c1r = stof(argv[3]);
-	float c1i = stof(argv[4]);
+	real c0r = stof(argv[1]);
+	real c0i = stof(argv[2]);
+	real c1r = stof(argv[3]);
+	real c1i = stof(argv[4]);
 
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
-	float float_step = (c1r - c0r)/W;
-	float imag_step = (c1i - c0i)/H;
+	real real_step = (c1r - c0r)/W;
+	real imag_step = (c1i - c0i)/H;
 
 	//printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
-	//printf("step gpu %f %f %f %f\n", float_step, imag_step,(c1r - c0r), (c1i - c0i));
+	//printf("step gpu %f %f %f %f\n", real_step, imag_step,(c1r - c0r), (c1i - c0i));
 	int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
@@ -63,8 +64,8 @@ void mandelbrot_seq(char *argv[]){
     	int x = (k + inicial)/W;
 		int y = (k + inicial)%H;
 		// printf("%d %d    %d\n", x, y, n);
-        float point_r = c0r+x*float_step;
-        float point_i = c0i+y*imag_step;
+        real point_r = c0r+x*real_step;
+        real point_i = c0i+y*imag_step;
 
 		// printf("%f %f\n", point_r, point_i);
     	const int M = 1000;
@@ -74,9 +75,9 @@ void mandelbrot_seq(char *argv[]){
 		int j = -1;
 
 		//Valor da iteração passada
-		float old_r = 0;
-		float old_i = 0;
-		float aux = 0;
+		real old_r = 0;
+		real old_i = 0;
+		real aux = 0;
 
 		//Calcula o mandebrot
 		for(int i = 1; i <= M; i++){
@@ -116,10 +117,9 @@ void mandelbrot_seq(char *argv[]){
 			// int y = p%N;
 
 				j = results[k];
-				// if (j!=23)
-					// printf("%d:%d - %d\n",x,y, j);
-				int x = k/W;
-				int y = k%H;
+                int x, y;
+                x = ((i*m_size + r + k)/H);
+                y = (i*m_size + r + k)%W;
 				if (j == -1)
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 				else {
@@ -143,23 +143,24 @@ void mandelbrot_seq(char *argv[]){
 }
 
 
-// template<class float> // para trocar entre float e double
+///////////////////////////////////////OMP//////////////////////////////////////
+template<class real> // para trocar entre float e double
 void mandelbrot_omp(char *argv[]){
-	float c0r = stof(argv[1]);
-	float c0i = stof(argv[2]);
-	float c1r = stof(argv[3]);
-	float c1i = stof(argv[4]);
+	real c0r = stof(argv[1]);
+	real c0i = stof(argv[2]);
+	real c1r = stof(argv[3]);
+	real c1i = stof(argv[4]);
 
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
 	int threads = stoi(argv[8]);
 
-	float float_step = (c1r - c0r)/W;
-	float imag_step = (c1i - c0i)/H;
+	real real_step = (c1r - c0r)/W;
+	real imag_step = (c1i - c0i)/H;
 
 	// printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
-	//printf("step gpu %f %f %f %f\n", float_step, imag_step,(c1r - c0r), (c1i - c0i));
+	//printf("step gpu %f %f %f %f\n", real_step, imag_step,(c1r - c0r), (c1i - c0i));
 	int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
@@ -180,8 +181,8 @@ void mandelbrot_omp(char *argv[]){
     	int x = (k + inicial)/W;
 		int y = (k + inicial)%H;
 		// printf("%d %d    %d\n", x, y, n);
-        float point_r = c0r+x*float_step;
-        float point_i = c0i+y*imag_step;
+        real point_r = c0r+x*real_step;
+        real point_i = c0i+y*imag_step;
 
 		// printf("%f %f\n", point_r, point_i);
     	const int M = 1000;
@@ -191,9 +192,9 @@ void mandelbrot_omp(char *argv[]){
 		int j = -1;
 
 		//Valor da iteração passada
-		float old_r = 0;
-		float old_i = 0;
-		float aux = 0;
+		real old_r = 0;
+		real old_i = 0;
+		real aux = 0;
 
 		//Calcula o mandebrot
 		for(int i = 1; i <= M; i++){
@@ -233,10 +234,9 @@ void mandelbrot_omp(char *argv[]){
 			// int y = p%N;
 
 				j = results[k];
-				// if (j!=23)
-					// printf("%d:%d - %d\n",x,y, j);
-				int x = k/W;
-				int y = k%H;
+                int x, y;
+                x = ((i*m_size + r + k)/H);
+                y = (i*m_size + r + k)%W;
 				if (j == -1)
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 				else {
@@ -259,7 +259,7 @@ void mandelbrot_omp(char *argv[]){
 	delete [] results;
 }
 
-/*
+//////////////////////////////////////CUDA//////////////////////////////////////
 //Função que furtei do add.cu
 void cudaAssert(cudaError_t err)
 {
@@ -381,8 +381,9 @@ void mandelbrot_gpu(char *argv[]){
 
 				j = results[k];
 				//calcula o indice dos pixels baseado no indice do vetor de resultado
-				int x = k/W;
-				int y = k%H;
+                int x, y;
+                x = ((i*m_size + r + k)/H);
+                y = (i*m_size + r + k)%W;
 				//preenche a imagem
 				if (j == -1)
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
@@ -406,7 +407,7 @@ void mandelbrot_gpu(char *argv[]){
 	delete [] results;
 
 }
-*/
+////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[]){
 	//processar os args
@@ -425,11 +426,11 @@ int main(int argc, char *argv[]){
 
 	string cgpu(argv[7]);
 	if(cgpu == "cpu")
-		mandelbrot_omp(argv);
-	// else if(cgpu == "gpu")
-	// 	mandelbrot_gpu(argv);
+		mandelbrot_omp<float>(argv);
+	else if(cgpu == "gpu")
+		mandelbrot_gpu(argv);
 	else if(cgpu == "seq")
-		mandelbrot_seq(argv);
+		mandelbrot_seq<float>(argv);
 	else
 		cout << "Errrooou";
 
