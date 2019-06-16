@@ -108,7 +108,12 @@ void mandelbrot_seq(char *argv[]){
 		int m_size = size;
 		for(int i = 0; i < world_size; i++){
 
-			if(i >= r) m_size = (W*H)/world_size;
+			int m_inicial = i*size;
+			if(i < r) m_inicial += i;
+			else{
+				m_inicial += r
+				m_size = (W*H)/world_size;
+			}
 			if(i != 0) MPI_Recv(results, m_size, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 			for(int k = 0; k < m_size; k++) {
@@ -118,8 +123,8 @@ void mandelbrot_seq(char *argv[]){
 
 				j = results[k];
                 int x, y;
-                x = ((i*m_size + r + k)/H);
-                y = (i*m_size + r + k)%W;
+                x = (m_inicial + k)/H;
+                y = (m_inicial + k)%W;
 				if (j == -1)
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 				else {
@@ -225,7 +230,12 @@ void mandelbrot_omp(char *argv[]){
 		int m_size = size;
 		for(int i = 0; i < world_size; i++){
 
-			if(i >= r) m_size = (W*H)/world_size;
+			int m_inicial = i*size;
+			if(i < r) m_inicial += i;
+			else{
+				m_inicial += r
+				m_size = (W*H)/world_size;
+			}
 			if(i != 0) MPI_Recv(results, m_size, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 			for(int k = 0; k < m_size; k++) {
@@ -235,8 +245,8 @@ void mandelbrot_omp(char *argv[]){
 
 				j = results[k];
                 int x, y;
-                x = ((i*m_size + r + k)/H);
-                y = (i*m_size + r + k)%W;
+                x = (m_inicial + k)/H;
+                y = (m_inicial + k)%W;
 				if (j == -1)
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
 				else {
@@ -371,7 +381,12 @@ void mandelbrot_gpu(char *argv[]){
 		int m_size = size;
 		for(int i = 0; i < world_size; i++){
 			// recebe o vetor com os os resultados de se e quando convergiu
-			if(i >= r) m_size = (W*H)/world_size;
+			int m_inicial = i*size;
+			if(i < r) m_inicial += i;
+			else{
+				m_inicial += r
+				m_size = (W*H)/world_size;
+			}
 			if(i != 0) MPI_Recv(results, m_size, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
 			for(int k = 0; k < m_size; k++) {
@@ -382,8 +397,8 @@ void mandelbrot_gpu(char *argv[]){
 				j = results[k];
 				//calcula o indice dos pixels baseado no indice do vetor de resultado
                 int x, y;
-                x = ((i*m_size + r + k)/H);
-                y = (i*m_size + r + k)%W;
+                x = (m_inicial + k)/H;
+                y = (m_inicial + k)%W;
 				//preenche a imagem
 				if (j == -1)
 					imagem.set_pixel(x, y, png::rgb_pixel(0, 0, 0));
