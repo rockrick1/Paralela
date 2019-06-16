@@ -333,7 +333,7 @@ void mandelbrot_gpu(char *argv[]){
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
-	int THREADS_PER_BLOCK = stoi(argv[8]);
+	int threads = stoi(argv[8]);
 
 	float float_step = (c1r - c0r)/W;
 	float imag_step = (c1i - c0i)/H;
@@ -358,7 +358,7 @@ void mandelbrot_gpu(char *argv[]){
 	int *results = new int[size];
 	int *cuda_results;
 	cudaAssert(cudaMalloc(&cuda_results, size*sizeof(int)));
-	gpu_calculation<<<NUM_BLOCKS, THREADS_PER_BLOCK>>>(c0r, c0i, float_step, imag_step, cuda_results, size, W, H, inicial);
+	gpu_calculation<<<NUM_BLOCKS, threads>>>(c0r, c0i, float_step, imag_step, cuda_results, size, W, H, inicial);
 	cudaAssert(cudaMemcpy(results, cuda_results, size*sizeof(int), cudaMemcpyDeviceToHost));
 	cudaFree(cuda_results);
     if(rank == 0){
