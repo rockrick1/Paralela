@@ -333,12 +333,10 @@ void mandelbrot_gpu(char *argv[]){
 	int W = stoi(argv[5]);
 	int H = stoi(argv[6]);
 
-	int threads = stoi(argv[8]);
+	int THREADS_PER_BLOCK = stoi(argv[8]);
 
 	float float_step = (c1r - c0r)/W;
 	float imag_step = (c1i - c0i)/H;
-
-    int THREADS_PER_BLOCK = 128;
 
 	//printf("step gpu %f %f %f %f\n", c1r, c1i, c0r, c0i);
 	//printf("step gpu %f %f %f %f\n", float_step, imag_step,(c1r - c0r), (c1i - c0i));
