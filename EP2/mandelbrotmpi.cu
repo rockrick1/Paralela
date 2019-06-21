@@ -108,7 +108,7 @@ void mandelbrot_seq(char *argv[]){
 		int m_size = size;
 		for(int i = 0; i < world_size; i++){
 
-			int m_inicial = i*size;
+			int m_inicial = i*(W*H)/world_size;
 			if(i < r) m_inicial += i;
 			else{
 				m_inicial += r
@@ -230,7 +230,7 @@ void mandelbrot_omp(char *argv[]){
 		int m_size = size;
 		for(int i = 0; i < world_size; i++){
 
-			int m_inicial = i*size;
+			int m_inicial = i*(W*H)/world_size;
 			if(i < r) m_inicial += i;
 			else{
 				m_inicial += r
@@ -379,7 +379,7 @@ void mandelbrot_gpu(char *argv[]){
 		int m_size = size;
 		for(int i = 0; i < world_size; i++){
 			// recebe o vetor com os os resultados de se e quando convergiu
-			int m_inicial = i*size;
+			int m_inicial = i*(W*H)/world_size;
 			if(i < r) m_inicial += i;
 			else{
 				m_inicial += r
